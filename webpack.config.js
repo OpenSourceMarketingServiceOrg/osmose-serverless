@@ -5,8 +5,8 @@ module.exports = {
   entry: './handler.js',
   target: 'node',
   externals: {
-    "aws-sdk": "aws-sdk",
-    "babel-runtime": "babel-runtime"
+    aws-sdk: "aws-sdk",
+    babel-runtime: "babel-runtime"
   },
 
   module: {

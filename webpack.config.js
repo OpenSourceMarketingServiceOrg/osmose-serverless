@@ -7,7 +7,7 @@ module.exports = {
   externals: {
     "aws-sdk": "aws-sdk",
     "babel-runtime": "babel-runtime"
-  }
+  },
 
   module: {
     loaders: [{

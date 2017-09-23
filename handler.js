@@ -19,7 +19,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 		if (event.Records[0].Sns.Message.mail.bounce.bounceSubtype === "General") {
 			status = "No domain";
 		} else {
-			status = "Bad email address"
+			status = "Bad email address";
 		}
 	} else {
 		status = "Complaint";

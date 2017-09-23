@@ -59,8 +59,10 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
+  saveEmailStatus:
     handler: handler.saveEmailStatus
+    events:
+      - sns: arn:aws:sns:us-east-1:420906024005:osmose_mail
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

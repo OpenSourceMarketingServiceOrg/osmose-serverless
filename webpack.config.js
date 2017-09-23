@@ -4,7 +4,7 @@ const nodeExternals = require('webpack-node-externals');
 module.exports = {
   entry: './handler.js',
   target: 'node',
-  externals: [nodeExternals()],
+  externals: [nodeExternals({whitelist:["aws-sdk", "babel-runtime"]})],
   module: {
     loaders: [{
       test: /\.js$/,

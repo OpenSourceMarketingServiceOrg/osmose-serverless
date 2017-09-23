@@ -1,9 +1,16 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
+var nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  entry: slsw.lib.entries,
-  target: 'node',
+entry: './handler.js',
+   target: 'node',
+   externals: [nodeExternals()],
+   output: {
+    libraryTarget: 'commonjs',
+    path: path.join(__dirname, '.webpack'),
+    filename: '[name].js'
+  }
   module: {
     loaders: [{
       test: /\.js$/,
@@ -11,9 +18,4 @@ module.exports = {
       include: __dirname
     }]
   },
-  output: {
-    libraryTarget: 'commonjs',
-    path: path.join(__dirname, '.webpack'),
-    filename: '[name].js'
-  }
 };

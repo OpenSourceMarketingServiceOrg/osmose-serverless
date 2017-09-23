@@ -18,15 +18,12 @@ service: osmose-serverless # NOTE: update this with your service name
 # frameworkVersion: "=X.X.X"
 
 plugins:
-  - serverless-webpack
   - serverless-offline
 
 provider:
   name: aws
   runtime: nodejs6.10
 
-custom: 
-  webpackIncludeModules: true
 
 # you can overwrite defaults here
 #  stage: dev

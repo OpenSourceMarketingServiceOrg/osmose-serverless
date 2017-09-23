@@ -1,15 +1,10 @@
-if (!global._babelPolyfill) {
-   require('babel-polyfill');
-}
 
+'use strict';
 var AWS = require('aws-sdk');
 var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-export const saveEmailStatus = (event, context, callback) => {
+module.exports.saveEmailStatus = (event, context, callback) => {
 
-  const p = new Promise((resolve, reject) => {
-    resolve("success");
-  });
 
 	var addressList = [];
 
@@ -60,10 +55,6 @@ export const saveEmailStatus = (event, context, callback) => {
 	postToDynamoDB(params).then((res) => {
 		console.log("resForPost", res);
 	})
-
-  p.then(r=> {
-    console.log("r: ", r);
-  })
 
 };
 

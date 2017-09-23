@@ -1,9 +1,16 @@
-'use strict';
+if (!global._babelPolyfill) {
+   require('babel-polyfill');
+}
 
 var AWS = require('aws-sdk');
 var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
-module.exports.saveEmailStatus = (event, context, callback) => {
+export const saveEmailStatus = (event, context, callback) => {
+
+  const p = new Promise((resolve, reject) => {
+    resolve("success");
+  });
+
 	var addressList = [];
 
 	console.log("Message", event.Records[0].Sns.Message);
@@ -11,7 +18,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 	event.Records[0].Sns.Message.mail.destination.forEach((addr) => {
 		addressList.push(addr);
 	})
-	
+
 	var status;
 	if (event.Records[0].Sns.Message.mail.notificationType === "Delivery") {
 		status = "Delivered";
@@ -53,6 +60,11 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 	postToDynamoDB(params).then((res) => {
 		console.log("resForPost", res);
 	})
+
+  p.then(r=> {
+    console.log("r: ", r);
+  })
+
 };
 
 function postToDynamoDB(params) {
@@ -64,7 +76,7 @@ function postToDynamoDB(params) {
 				reject(err);
 			} else {
 				resolve(data);
-			}	
+			}
 		})
 	})
 }

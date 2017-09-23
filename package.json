@@ -1,0 +1,41 @@
+{
+  "name": "osmose-serverless",
+  "version": "0.0.0",
+  "description": "OSMoSE serverlesss backend written for AWS Lambda",
+  "main": "handler.js",
+  "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenSourceMarketingServiceOrg/osmos-serverless.git"
+  },
+  "keywords": [
+    "lambda",
+    "webpack",
+    "serverless",
+    "OSMoSE",
+    "SES",
+    "aws",
+    "SNS",
+    "DynamoDB",
+    "email"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "start": "serverless invoke local --function handler.saveEmailStatus"
+  },
+  "devDependencies": {
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-latest": "^6.24.1",
+    "serverless": "^1.17.0",
+    "serverless-offline": "^3.15.1",
+    "serverless-webpack": "^2.2.0",
+    "webpack": "^3.3.0",
+    "webpack-node-externals": "^1.6.0"
+  },
+  "dependencies": {
+    "babel-runtime": "^6.22.0"
+  }
+}

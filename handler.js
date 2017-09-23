@@ -6,9 +6,7 @@ var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 module.exports.saveEmailStatus = (event, context, callback) => {
 	var addressList = [];
 
-	console.log("eventRecords", event.Records[0]);
 	console.log("Message", event.Records[0].Sns.Message);
-	console.log("destination", event.Records[0].Sns.Message.mail.destination);
 
 	event.Records[0].Sns.Message.mail.destination.forEach((addr) => {
 		addressList.push(addr);

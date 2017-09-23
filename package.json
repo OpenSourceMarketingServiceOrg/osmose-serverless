@@ -21,7 +21,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "start": "serverless invoke local --function saveEmailStatus"
+    "start": "serverless invoke local -f saveEmailStatus -p event.json"
   },
   "devDependencies": {
     "babel-core": "^6.25.0",

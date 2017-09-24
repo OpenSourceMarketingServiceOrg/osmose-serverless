@@ -12,9 +12,9 @@ module.exports.saveEmailStatus = (event, context, callback) => {
   var message = event.Records[0].Sns.Message;
   console.log("message1: ", message);
   var notificationType = message.notificationType;
-  console.log(notificationType);
+  console.log("notificationType",notificationType);
   var delivery = message.delivery;
-  console.log(delivery);
+  console.log("delivery", delivery);
   var mail = message.mail;
   console.log("mail", mail);
   var dest = mail.destination;

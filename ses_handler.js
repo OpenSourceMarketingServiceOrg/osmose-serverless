@@ -1,5 +1,5 @@
-
 'use strict';
+
 var AWS = require('aws-sdk');
 var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
@@ -8,54 +8,67 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 
 	var addressList = [];
 
-	console.log("Message", event.Records[0].Sns.Message);
+  var message = JSON.parse(event.Records[0].Sns.Message);
+  console.log("message1: ", message);
+  var notificationType = message.notificationType;
+  console.log("notificationType",notificationType);
+  var delivery = message.delivery;
+  console.log("delivery", delivery);
+  var mail = message.mail;
+  console.log("mail", mail);
+  var dest = mail.destination;
+  console.log("dest", dest);
 
-	event.Records[0].Sns.Message.mail.destination.forEach((addr) => {
-		addressList.push(addr);
-	})
 
-	var status;
-	if (event.Records[0].Sns.Message.mail.notificationType === "Delivery") {
-		status = "Delivered";
-	} else if (event.Records[0].Sns.Message.mail.bounce) {
-		if (event.Records[0].Sns.Message.mail.bounce.bounceSubtype === "General") {
-			status = "No domain";
+	if (dest !== null) {
+		dest.forEach((addr) => {
+			addressList.push(addr);
+		});
+
+		var status;
+		if (message.notificationType === "Delivery") {
+			status = "Delivered";
+		} else if (message.mail.bounce) {
+			if (message.mail.bounce.bounceSubtype === "General") {
+				status = "No domain";
+			} else {
+				status = "Bad email address";
+			}
 		} else {
-			status = "Bad email address";
+			status = "Complaint";
 		}
-	} else {
-		status = "Complaint";
-	}
 
-	var messageId = event.Records[0].Sns.Message.mail.messageId;
+		var messageId = message.mail.messageId;
 
-	var params = {
-		"Key": {
-			"MessageId": {
-				S: messageId
-			}
-		},
-		"ReturnValues":"NONE",
-		"ExpressionAttributeNames": {
-			"#AL": "Addresses",
-			"#S":"Status"
-		},
-		"ExpressionAttributeValues": {
-			":al": {
-				"SS":addressList
+		var params = {
+			"Key": {
+				"MessageId": {
+					S: messageId
+				}
 			},
-			":s": {
-				"S":status
-			}
-		},
-		"UpdateExpression": "SET #AL = :al, #S = :s",
-  		"TableName": "SentEmailStatus"
-	};
+			"ReturnValues":"NONE",
+			"ExpressionAttributeNames": {
+				"#AL": "Addresses",
+				"#S":"Status"
+			},
+			"ExpressionAttributeValues": {
+				":al": {
+					"SS":addressList
+				},
+				":s": {
+					"S":status
+				}
+			},
+			"UpdateExpression": "SET #AL = :al, #S = :s",
+  			"TableName": "SentEmailStatus"
+		};
 
-	postToDynamoDB(params).then((res) => {
-		console.log("resForPost", res);
-	})
-
+		postToDynamoDB(params).then((res) => {
+			console.log("resForPost", res);
+		});
+	} else {
+		console.log("Destination was null ");
+	}
 };
 
 function postToDynamoDB(params) {
@@ -69,5 +82,5 @@ function postToDynamoDB(params) {
 				resolve(data);
 			}
 		})
-	})
+	});
 }

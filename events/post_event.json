@@ -1,0 +1,35 @@
+{
+  "resource": "/list/create",
+  "path": "/list/create",
+  "httpMethod": "POST",
+  "headers": null,
+  "queryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {
+    "path": "/list/create",
+    "accountId": "420906024005",
+    "resourceId": "oolakw",
+    "stage": "test-invoke-stage",
+    "requestId": "test-invoke-request",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": "420906024005",
+      "cognitoIdentityId": null,
+      "caller": "420906024005",
+      "apiKey": "test-invoke-api-key",
+      "sourceIp": "test-invoke-source-ip",
+      "accessKey": "ASIAJTD4YKXH3T62ZA7Q",
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": "arn:aws:iam::420906024005:root",
+      "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_131)",
+      "user": "420906024005"
+    },
+    "resourcePath": "/list/create",
+    "httpMethod": "POST",
+    "apiId": "08hxnfcfu7"
+  },
+  "body": "{\n \"firstName\": \"Dan\",\n \"lastName\": \"Brown\",\n \"email\": \"danjenator@gmail.com\"\n}",
+  "isBase64Encoded": false
+}

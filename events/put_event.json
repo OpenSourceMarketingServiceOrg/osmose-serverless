@@ -1,0 +1,35 @@
+{
+  "resource": "/list/update",
+  "path": "/list/update",
+  "httpMethod": "PUT",
+  "headers": null,
+  "queryStringParameters": null,
+  "pathParameters": null,
+  "stageVariables": null,
+  "requestContext": {
+    "path": "/list/update",
+    "accountId": "420906024005",
+    "resourceId": "bhhwom",
+    "stage": "test-invoke-stage",
+    "requestId": "test-invoke-request",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": "420906024005",
+      "cognitoIdentityId": null,
+      "caller": "420906024005",
+      "apiKey": "test-invoke-api-key",
+      "sourceIp": "test-invoke-source-ip",
+      "accessKey": "ASIAJTD4YKXH3T62ZA7Q",
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": "arn:aws:iam::420906024005:root",
+      "userAgent": "Apache-HttpClient/4.5.x (Java/1.8.0_131)",
+      "user": "420906024005"
+    },
+    "resourcePath": "/list/update",
+    "httpMethod": "PUT",
+    "apiId": "08hxnfcfu7"
+  },
+  "body": "{\n \"firstName \": \"Dan \",\n \"lastName \": \"Brown\",\n \"email\": \"danjenator@gmail.com\"\n}",
+  "isBase64Encoded": false
+}

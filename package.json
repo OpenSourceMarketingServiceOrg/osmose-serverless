@@ -20,8 +20,9 @@
   ],
   "license": "MIT",
   "scripts": {
-    "start": "serverless invoke local -f saveEmailStatus -p event.json",
-    "function:api": "serverless invoke local -f emailList -p api_event.json"
+    "start": "npm run f:ses && npm run f:api",
+    "f:api": "serverless invoke local -f emailList -p api_event.json",
+    "f:ses": "serverless invoke local -f saveEmailStatus -p event.json"
   },
   "devDependencies": {
     "serverless": "^1.17.0",

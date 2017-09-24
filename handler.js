@@ -26,7 +26,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 		});
 
 		var status;
-		if (message.mail.notificationType === "Delivery") {
+		if (message.notificationType === "Delivery") {
 			status = "Delivered";
 		} else if (message.mail.bounce) {
 			if (message.mail.bounce.bounceSubtype === "General") {

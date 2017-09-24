@@ -8,17 +8,22 @@ module.exports.emailList = (event, context, callback) => {
   console.log("event.httpMethod", event.httpMethod);
   var response;
   var items;
+  var emails = [];
   if(event.httpMethod === "GET") {
     getItemsFromDynamoDB().then((res) => {
       console.log("resForGet", res);
       items = res.Items;
       console.log("items", items);
+      items.forEach((item) => {
+        emails.push(item.Email.S);
+      })
+      console.log("emails", emails);
     })
     
     response = {
       statusCode: 200,
       body: JSON.stringify({
-        message: items
+        message: emails.join()
       })
     };
   } else if (event.httpMethod === "POST") {
@@ -102,6 +107,7 @@ function deleteItemFromDynamoDB(params) {
 function getItemsFromDynamoDB() {
  var params = {
         TableName:"EmailList",
+        ProjectionExpression: "Email"
      }; 
 
    return new Promise((resolve, reject) => {

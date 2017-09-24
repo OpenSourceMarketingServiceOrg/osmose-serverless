@@ -60,11 +60,11 @@ provider:
 
 functions:
   saveEmailStatus:
-    handler: ses_handler.saveEmailStatus
+    handler: handler_ses.saveEmailStatus
     events:
       - sns: arn:aws:sns:us-east-1:420906024005:osmose_mail
   emailList: # Function name
-    handler: api_handler.emailList # Reference to file handler.js & exported function 'users'
+    handler: handler_api.emailList # Reference to file handler.js & exported function 'users'
     events: # All events associated with this function
       - http:
           path: list/create

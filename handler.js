@@ -10,7 +10,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 
 	console.log("Message", event.Records[0].Sns.Message);
 	console.log("Mail", event.Records[0].Sns.Message.mail);
-	
+
 	if (event.Records[0].Sns.Message.mail.destination !== null) {
 		event.Records[0].Sns.Message.mail.destination.forEach((addr) => {
 			addressList.push(addr);
@@ -56,7 +56,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 
 		postToDynamoDB(params).then((res) => {
 			console.log("resForPost", res);
-		}
+		})
 	} else {
 		console.log("Destination was null ");
 	}

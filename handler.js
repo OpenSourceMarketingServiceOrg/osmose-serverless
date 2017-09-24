@@ -8,9 +8,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 
 	var addressList = [];
 
-	console.log("sns", event.Records[0].Sns)
-	console.log("message0", event.Records[0].Sns.Message);
-  var message = event.Records[0].Sns.Message;
+  var message = JSON.parse(event.Records[0].Sns.Message);
   console.log("message1: ", message);
   var notificationType = message.notificationType;
   console.log("notificationType",notificationType);
@@ -21,16 +19,17 @@ module.exports.saveEmailStatus = (event, context, callback) => {
   var dest = mail.destination;
   console.log("dest", dest);
 
+
 	if (dest !== null) {
 		dest.forEach((addr) => {
 			addressList.push(addr);
 		});
 
 		var status;
-		if (event.Records[0].Sns.Message.mail.notificationType === "Delivery") {
+		if (message.mail.notificationType === "Delivery") {
 			status = "Delivered";
-		} else if (event.Records[0].Sns.Message.mail.bounce) {
-			if (event.Records[0].Sns.Message.mail.bounce.bounceSubtype === "General") {
+		} else if (message.mail.bounce) {
+			if (message.mail.bounce.bounceSubtype === "General") {
 				status = "No domain";
 			} else {
 				status = "Bad email address";
@@ -39,7 +38,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 			status = "Complaint";
 		}
 
-		var messageId = event.Records[0].Sns.Message.mail.messageId;
+		var messageId = message.mail.messageId;
 
 		var params = {
 			"Key": {

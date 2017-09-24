@@ -1,5 +1,5 @@
-
 'use strict';
+
 var AWS = require('aws-sdk');
 var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 
@@ -8,13 +8,18 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 
 	var addressList = [];
 
-	console.log("Message", event.Records[0].Sns.Message);
-	console.log("Mail", event.Records[0].Sns.Message.mail);
+	console.log("message0", event.Records[0].Sns.Message);
+  var message = event.Records[0].Sns.Message;
+  console.log("message1: ", message);
+  var mail = message.mail;
+  console.log("mail", mail);
+  var dest = mail.destination;
+  console.log("dest", dest);
 
-	if (event.Records[0].Sns.Message.mail.destination !== null) {
-		event.Records[0].Sns.Message.mail.destination.forEach((addr) => {
+	if (dest !== null) {
+		dest.forEach((addr) => {
 			addressList.push(addr);
-		})
+		});
 
 		var status;
 		if (event.Records[0].Sns.Message.mail.notificationType === "Delivery") {
@@ -56,7 +61,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 
 		postToDynamoDB(params).then((res) => {
 			console.log("resForPost", res);
-		})
+		});
 	} else {
 		console.log("Destination was null ");
 	}
@@ -73,5 +78,5 @@ function postToDynamoDB(params) {
 				resolve(data);
 			}
 		})
-	})
+	});
 }

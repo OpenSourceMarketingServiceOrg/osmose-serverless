@@ -1,6 +1,6 @@
 {
   "name": "osmose-serverless",
-  "version": "0.1.0",
+  "version": "0.2.0-0",
   "description": "OSMoSE serverlesss backend written for AWS Lambda",
   "main": "handler.js",
   "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
@@ -24,11 +24,11 @@
   "scripts": {
     "start": "npm run f:ses && npm run f:api",
     "f:api": "npm run f:api:get && npm run f:api:put && npm run f:api:delete && npm run f:api:post",
-    "f:api:get" : "serverless invoke local -f emailList -p events/get_event.json",
-    "f:api:delete" : "serverless invoke local -f emailList -p events/delete_event.json",
-    "f:api:put" : "serverless invoke local -f emailList -p events/put_event.json",
-    "f:api:post" : "serverless invoke local -f emailList -p events/post_event.json",
-    "f:ses": "serverless invoke local -f saveEmailStatus -p events/ses_event.json"
+    "f:api:get": "serverless invoke local -f emailList -p events/get_event.json",
+    "f:api:delete": "serverless invoke local -f emailList -p events/delete_event.json",
+    "f:api:put": "serverless invoke local -f emailList -p events/put_event.json",
+    "f:api:post": "serverless invoke local -f emailList -p events/post_event.json",
+    "f:ses": "serverless invoke local -f saveEmailStatus -p events/ses_event.json --debug"
   },
   "devDependencies": {
     "serverless": "^1.17.0",

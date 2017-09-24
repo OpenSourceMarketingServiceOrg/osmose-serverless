@@ -12,14 +12,14 @@ module.exports.emailList = (event, context, callback) => {
     getItemsFromDynamoDB().then((res) => {
       console.log("resForGet", res);
       items = res.Items;
+      console.log("items", items);
     })
     
     response = {
       statusCode: 200,
       body: JSON.stringify({
-        message: "GET IT!",
-        input: items
-      }),
+        message: items
+      })
     };
   } else if (event.httpMethod === "POST") {
       postToDynamoDB(translateToPostParams(event)).then((res) => {
@@ -30,8 +30,8 @@ module.exports.emailList = (event, context, callback) => {
       statusCode: 200,
       body: JSON.stringify({
         message: "POST IT!",
-        input: event,
-      }),
+        input: event
+      })
     };
   } else if (event.httpMethod === "PUT") {
     postToDynamoDB(translateToPostParams(event)).then((res) => {
@@ -41,8 +41,8 @@ module.exports.emailList = (event, context, callback) => {
       statusCode: 200,
       body: JSON.stringify({
         message: "PUT IT!",
-        input: event,
-      }),
+        input: event
+      })
     };
   } else if (event.httpMethod === "DELETE") {
     deleteItemFromDynamoDB(translateToDeleteParams(event)).then((res) => {
@@ -53,16 +53,16 @@ module.exports.emailList = (event, context, callback) => {
       statusCode: 200,
       body: JSON.stringify({
         message: "DELETE IT!",
-        input: event,
-      }),
+        input: event
+      })
     };
   } else {
     response = {
       statusCode: 400,
       body: JSON.stringify({
         message: "I AIN'T IT!",
-        input: event,
-      }),
+        input: event
+      })
     };
   }
 
@@ -102,7 +102,6 @@ function deleteItemFromDynamoDB(params) {
 function getItemsFromDynamoDB() {
  var params = {
         TableName:"EmailList",
-        ProjectionExpression: "Email"
      }; 
 
    return new Promise((resolve, reject) => {

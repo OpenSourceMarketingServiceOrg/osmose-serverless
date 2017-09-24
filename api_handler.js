@@ -2,21 +2,51 @@
 
 module.exports.emailList = (event, context, callback) => {
 
-  console.log("event", event);
-  console.log("context", context);
-  console.log("callback", callback);
+  console.log("event.httpMethod", event.httpMethod);
 
+  var response;
 
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: "Lambda and webpack playing nicely with the serverless framework",
-      input: event,
-    }),
-  };
+  if(event.httpMethod === "GET") {
+    response = {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "GET IT!",
+        input: event,
+      }),
+    };
+  } else if (event.httpMethod === "POST") {
+    response = {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "POST IT!",
+        input: event,
+      }),
+    };
+  } else if (event.httpMethod === "PUT") {
+    response = {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "PUT IT!",
+        input: event,
+      }),
+    };
+  } else if (event.httpMethod === "DELETE") {
+    response = {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: "DELETE IT!",
+        input: event,
+      }),
+    };
+  } else {
+    response = {
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "I AIN'T IT!",
+        input: event,
+      }),
+    };
+  }
 
   callback(null, response);
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
 };

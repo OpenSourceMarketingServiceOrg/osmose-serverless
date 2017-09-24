@@ -60,7 +60,7 @@ provider:
 
 functions:
   saveEmailStatus:
-    handler: handler.saveEmailStatus
+    handler: ses_handler.saveEmailStatus
     events:
       - sns: arn:aws:sns:us-east-1:420906024005:osmose_mail
   emailList: # Function name

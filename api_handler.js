@@ -22,9 +22,7 @@ module.exports.emailList = (event, context, callback) => {
     
     response = {
       statusCode: 200,
-      body: JSON.stringify({
-        message: emails.join()
-      })
+      body: JSON.stringify(emails)
     };
   } else if (event.httpMethod === "POST") {
       postToDynamoDB(translateToPostParams(event)).then((res) => {

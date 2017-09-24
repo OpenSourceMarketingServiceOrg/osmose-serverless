@@ -18,7 +18,7 @@ module.exports.emailList = (event, context, callback) => {
       statusCode: 200,
       body: JSON.stringify({
         message: "GET IT!",
-        emails: items
+        input: items
       }),
     };
   } else if (event.httpMethod === "POST") {

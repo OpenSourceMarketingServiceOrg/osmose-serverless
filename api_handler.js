@@ -1,15 +1,18 @@
 'use strict';
 
-var AWS = require('aws-sdk');
-var dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+let AWS = require('aws-sdk');
+let dynamodb = new AWS.DynamoDB({
+  apiVersion: '2012-08-10'
+});
 
 module.exports.emailList = (event, context, callback) => {
 
   console.log("event.httpMethod", event.httpMethod);
-  var response;
-  var items;
-  var emails = [];
-  if(event.httpMethod === "GET") {
+  let response;
+  let items;
+  let emails = [];
+  //TODO Change to switch
+  if (event.httpMethod === "GET") {
     getItemsFromDynamoDB().then((res) => {
       console.log("resForGet", res);
       items = res.Items;
@@ -18,45 +21,66 @@ module.exports.emailList = (event, context, callback) => {
         emails.push(item.Email.S);
       })
       console.log("emails", emails);
-    })
-    
+    });
+
     response = {
       statusCode: 200,
       body: JSON.stringify(emails)
     };
   } else if (event.httpMethod === "POST") {
-      postToDynamoDB(translateToPostParams(event)).then((res) => {
+    translateToPostParams(event).then((params)=>{
+      response = {
+        statusCode: 200,
+        body: JSON.stringify({
+          message: "POST IT!",
+          input: params
+        })
+      };
+      postToDynamoDB(params).then((res) => {
         console.log("resForPost", res);
+      }).catch((err)=>{
+        console.log("err: ", err.statusCode);
+        response = {
+          statusCode: 500,
+          body: JSON.stringify({
+            message: "ERROR IT!",
+            input: err
+          })
+        };
       });
+    });
+  } else if (event.httpMethod === "PUT") {
+    translateToPostParams(event).then((params)=>{
+      postToDynamoDB(params).then((res) => {
+        console.log("resForPut", res);
+        response = {
+          statusCode: 200,
+          body: JSON.stringify({
+            message: "PUT IT!",
+            input: params
+          })
+        };
+      }).catch((err)=>{
+        console.log("err: ", err);
+        response = {
+          statusCode: err.statusCode,
+          body: JSON.stringify({
+            message: "ERROR IT!",
+            input: err
+          })
+        };
+      });
+
+    });
+  } else if (event.httpMethod === "DELETE") {
+    deleteItemFromDynamoDB(translateToDeleteParams(event)).then((res) => {
+      console.log("resForDelete", res);
+    });
 
     response = {
       statusCode: 200,
       body: JSON.stringify({
-        message: "POST IT!",
-        input: event
-      })
-    };
-  } else if (event.httpMethod === "PUT") {
-    postToDynamoDB(translateToPostParams(event)).then((res) => {
-        console.log("resForPut", res);
-      });
-    response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: "PUT IT!",
-        input: event
-      })
-    };
-  } else if (event.httpMethod === "DELETE") {
-    deleteItemFromDynamoDB(translateToDeleteParams(event)).then((res) => {
-      console.log("resForDelete", res);
-       });
-    
-    response = {
-      statusCode: 200,
-      body: JSON.stringify({
-        message: "DELETE IT!",
-        input: event
+        message: "DELETE IT!"
       })
     };
   } else {
@@ -74,7 +98,7 @@ module.exports.emailList = (event, context, callback) => {
 
 function postToDynamoDB(params) {
   return new Promise((resolve, reject) => {
-  
+
     dynamodb.updateItem(params, (err, data) => {
       if (err) {
         console.log(err);
@@ -88,8 +112,8 @@ function postToDynamoDB(params) {
 }
 
 function deleteItemFromDynamoDB(params) {
-    return new Promise((resolve, reject) => {
-  
+  return new Promise((resolve, reject) => {
+
     dynamodb.deleteItem(params, (err, data) => {
       if (err) {
         console.log(err);
@@ -103,13 +127,13 @@ function deleteItemFromDynamoDB(params) {
 }
 
 function getItemsFromDynamoDB() {
- var params = {
-        TableName:"EmailList",
-        ProjectionExpression: "Email"
-     }; 
+  let params = {
+    TableName: "EmailList",
+    ProjectionExpression: "Email"
+  };
 
-   return new Promise((resolve, reject) => {
-  
+  return new Promise((resolve, reject) => {
+
     dynamodb.scan(params, (err, data) => {
       if (err) {
         console.log(err);
@@ -122,39 +146,43 @@ function getItemsFromDynamoDB() {
   })
 }
 
+//TODO move to models dir
 function translateToPostParams(event) {
-  var body = JSON.parse(event.body);
-  var emailBinary = new Buffer(body.email).toString("base64")
-  return {
-    "Key": {
-      "EmailBinary": {
-        B: emailBinary
-      }
-    },
-    "ReturnValues":"NONE",
-    "ExpressionAttributeNames": {
-      "#FN": "FirstName",
-      "#LN": "LastName",
-      "#EM": "Email"
-    },
-    "ExpressionAttributeValues": {
-      ":fn": {
-        "S":body.firstName
+  return new Promise((resolve, reject) => {
+    let body = JSON.parse(event.body);
+    let emailBinary = new Buffer(body.email).toString("base64")
+    let params = {
+      "Key": {
+        "EmailBinary": {
+          S: emailBinary
+        }
       },
-      ":ln": {
-        "S":body.lastName
+      "ReturnValues": "NONE",
+      "ExpressionAttributeNames": {
+        "#FN": "FirstName",
+        "#LN": "LastName",
+        "#EM": "Email"
       },
-      ":em": {
-        "S":body.email
-      }
-    },
-    "UpdateExpression": "SET #FN = :fn, #LN = :ln, #EM = :em",
+      "ExpressionAttributeValues": {
+        ":fn": {
+          "S": body.firstName
+        },
+        ":ln": {
+          "S": body.lastName
+        },
+        ":em": {
+          "S": body.email
+        }
+      },
+      "UpdateExpression": "SET #FN = :fn, #LN = :ln, #EM = :em",
       "TableName": "EmailList"
     };
+    resolve(params);
+  });
 }
 
 function translateToDeleteParams(event) {
-  var emailBinary = new Buffer(event.queryStringParameters.email).toString("base64")
+  let emailBinary = new Buffer(event.queryStringParameters.email).toString("base64")
   return {
     "Key": {
       "EmailBinary": {
@@ -162,5 +190,5 @@ function translateToDeleteParams(event) {
       }
     },
     "TableName": "EmailList"
-    };
+  };
 }

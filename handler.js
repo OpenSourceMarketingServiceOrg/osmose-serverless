@@ -8,6 +8,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
 
 	var addressList = [];
 
+	console.log("sns", event.Records[0].Sns)
 	console.log("message0", event.Records[0].Sns.Message);
   var message = event.Records[0].Sns.Message;
   console.log("message1: ", message);

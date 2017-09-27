@@ -78,6 +78,13 @@ functions:
       - http:
           path: list
           method: get
+          integration: lambda
+          cors: true
+          private: false
+          response:
+            statusCodes:
+              200:
+                pattern: ''
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

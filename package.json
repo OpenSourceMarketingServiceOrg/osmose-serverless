@@ -1,6 +1,6 @@
 {
   "name": "osmose-serverless",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "OSMoSE serverlesss backend written for AWS Lambda",
   "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
   "repository": {
@@ -18,7 +18,8 @@
     "email",
     "api",
     "api-gateway"
-  ],"bugs": {
+  ],
+  "bugs": {
     "url": "https://github.com/OpenSourceMarketingServiceOrg/osmose-serverless/issues"
   },
   "license": "MIT",

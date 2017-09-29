@@ -26,8 +26,8 @@ provider:
 
 
 # you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  stage: dev0
+  region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -60,31 +60,24 @@ provider:
 
 functions:
   saveEmailStatus:
-    handler: handler_ses.saveEmailStatus
+    handler: handlers/ses-sns.saveEmailStatus
     events:
       - sns: arn:aws:sns:us-east-1:420906024005:osmose_mail
   emailList: # Function name
-    handler: handler_api.emailList # Reference to file handler.js & exported function 'users'
+    handler: handlers/api-list.emailList # Reference to file handler.js & exported function 'users'
     events: # All events associated with this function
       - http:
-          path: list/create
+          path: list
           method: post
       - http:
-          path: list/update
+          path: list
           method: put
       - http:
-          path: list/delete
+          path: list
           method: delete
       - http:
           path: list
           method: get
-          integration: lambda
-          cors: true
-          private: false
-          response:
-            statusCodes:
-              200:
-                pattern: ''
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

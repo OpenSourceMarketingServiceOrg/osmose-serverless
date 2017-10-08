@@ -73,10 +73,10 @@ function translateToPostParams(event) {
       },
       "ExpressionAttributeValues": {
         ":fn": {
-          "S": body.firstName
+          "S": body.fname
         },
         ":ln": {
-          "S": body.lastName
+          "S": body.lname
         },
         ":em": {
           "S": body.email

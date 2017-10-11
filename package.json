@@ -1,6 +1,6 @@
 {
   "name": "osmose-serverless",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "OSMoSE serverlesss backend written for AWS Lambda",
   "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
   "repository": {
@@ -33,10 +33,10 @@
     "f:ses": "serverless invoke local -f saveEmailStatus -p events/ses_event.json --debug"
   },
   "devDependencies": {
-    "serverless": "^1.17.0",
-    "serverless-offline": "^3.15.1"
+    "serverless": "1.17.0",
+    "serverless-offline": "3.15.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.122.0"
+    "aws-sdk": "2.122.0"
   }
 }

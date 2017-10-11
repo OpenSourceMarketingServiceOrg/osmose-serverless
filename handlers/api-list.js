@@ -62,7 +62,8 @@ function getItemsFromDynamoDB() {
 function translateToPostParams(event) {
   return new Promise((resolve, reject) => {
     let body = JSON.parse(event.body);
-    let emailBinary = new Buffer(body.email).toString("base64")
+    console.log("body: ", body);
+    let emailBinary = new Buffer(body.email).toString("base64");
     let params = {
       "Key": {
         "EmailBinary": {

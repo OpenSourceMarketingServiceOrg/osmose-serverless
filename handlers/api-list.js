@@ -1,5 +1,9 @@
 'use strict';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin' : '*', // Required for CORS support to work
+  'Access-Control-Allow-Credentials' : true // Required for cookies, authorization headers with HTTPS
+}
 let AWS = require('aws-sdk');
 let dynamodb = new AWS.DynamoDB({
   apiVersion: '2012-08-10'
@@ -58,7 +62,8 @@ function getItemsFromDynamoDB() {
 function translateToPostParams(event) {
   return new Promise((resolve, reject) => {
     let body = JSON.parse(event.body);
-    let emailBinary = new Buffer(body.email).toString("base64")
+    console.log("body: ", body);
+    let emailBinary = new Buffer(body.email).toString("base64");
     let params = {
       "Key": {
         "EmailBinary": {
@@ -125,6 +130,7 @@ module.exports.emailList = (event, context, callback) => {
       }
       response = {
         statusCode: 200,
+        headers: corsHeaders,
         body: JSON.stringify(res0)
       };
       callback(null, response);
@@ -132,6 +138,7 @@ module.exports.emailList = (event, context, callback) => {
       console.log("ERROR: ", err);
       response = {
         statusCode: err.statusCode,
+        headers: corsHeaders,
         body: err
       };
       callback(null, response);
@@ -141,6 +148,7 @@ module.exports.emailList = (event, context, callback) => {
       postToDynamoDB(params).then((res) => {
         response = {
           statusCode: 200,
+          headers: corsHeaders,
           body: JSON.stringify({
             message: "POST IT!",
             input: res
@@ -151,6 +159,7 @@ module.exports.emailList = (event, context, callback) => {
         console.log("ERROR: ", err);
         response = {
           statusCode: err.statusCode,
+          headers: corsHeaders,
           body: JSON.stringify({
             message: "ERROR IT!",
             input: err
@@ -164,6 +173,7 @@ module.exports.emailList = (event, context, callback) => {
       postToDynamoDB(params).then((res) => {
         response = {
           statusCode: 200,
+          headers: corsHeaders,
           body: JSON.stringify({
             message: "PUT IT!",
             input: res
@@ -174,6 +184,7 @@ module.exports.emailList = (event, context, callback) => {
         console.log("ERROR: ", err);
         response = {
           statusCode: err.statusCode,
+          headers: corsHeaders,
           body: JSON.stringify({
             message: "ERROR IT!",
             input: err
@@ -188,6 +199,7 @@ module.exports.emailList = (event, context, callback) => {
         console.log("resForDelete: ", res);
         response = {
           statusCode: 200,
+          headers: corsHeaders,
           body: JSON.stringify({
             message: "DELETE IT!"
           })
@@ -197,6 +209,7 @@ module.exports.emailList = (event, context, callback) => {
         console.log("ERROR: ", err);
         response = {
           statusCode: err.statusCode,
+          headers: corsHeaders,
           body: JSON.stringify({
             message: "ERROR IT!",
             input: err
@@ -208,6 +221,7 @@ module.exports.emailList = (event, context, callback) => {
   } else {
     response = {
       statusCode: 400,
+      headers: corsHeaders,
       body: JSON.stringify({
         message: "I AIN'T IT!",
         input: event
@@ -215,6 +229,4 @@ module.exports.emailList = (event, context, callback) => {
     };
     callback(null, response);
   }
-
-
 };

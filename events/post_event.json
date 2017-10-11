@@ -30,6 +30,6 @@
     "httpMethod": "POST",
     "apiId": "08hxnfcfu7"
   },
-  "body": "{\n \"firstName\": \"Dan\",\n \"lastName\": \"Brown\",\n \"email\": \"danjenator@gmail.com\"\n}",
+  "body": "{\n \"fname\": \"Dan\",\n \"lname\": \"Brown\",\n \"email\": \"danjenator@gmail.com\"\n}",
   "isBase64Encoded": false
 }

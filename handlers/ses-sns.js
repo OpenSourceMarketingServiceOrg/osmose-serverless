@@ -12,7 +12,9 @@ module.exports.saveEmailStatus = (event, context, callback) => {
   var addressList = [];
   //TODO add for each for Records
   var message = JSON.parse(event.Records[0].Sns.Message);
-  console.log("message1: ", message);
+  console.log("mail: ", message.mail);
+  console.log("headers: ", message.mail.headers);
+  console.log("headers common: ", message.mail.headers);
   var notificationType = message.notificationType;
   console.log("notificationType", notificationType);
   var delivery = message.delivery;

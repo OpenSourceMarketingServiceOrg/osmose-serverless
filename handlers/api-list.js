@@ -42,8 +42,7 @@ function getItemsFromDynamoDB() {
 
     //TODO move to models dir
     let params = {
-      TableName: "EmailList",
-      ProjectionExpression: "Email"
+      TableName: "EmailList"
     };
 
     dynamodb.scan(params, (err, data) => {

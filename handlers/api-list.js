@@ -42,8 +42,7 @@ function getItemsFromDynamoDB() {
 
     //TODO move to models dir
     let params = {
-      TableName: "EmailList",
-      ProjectionExpression: "Email"
+      TableName: "EmailList"
     };
 
     dynamodb.scan(params, (err, data) => {
@@ -120,12 +119,10 @@ module.exports.emailList = (event, context, callback) => {
   if (event.httpMethod === "GET") {
     getItemsFromDynamoDB().then((res) => {
       items = res.Items;
-      items.forEach((item) => {
-        emails.push(item.Email.S);
-      });
+      console.log("items: ", items);
       let res0 = {
         "title" : "Email List",
-        "emailList": emails,
+        "emailList": items,
         "event" : event
       }
       response = {

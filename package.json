@@ -1,6 +1,6 @@
 {
   "name": "osmose-serverless",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "OSMoSE serverlesss backend written for AWS Lambda",
   "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
   "repository": {

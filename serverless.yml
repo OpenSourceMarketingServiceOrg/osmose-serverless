@@ -84,6 +84,11 @@ functions:
           cors: true
   confirmEmail:
     handler: handlers/confirm-email.sendConfirm
+    events:
+      - http:
+          path: confirm
+          method: get
+          cors: true
 
 
 #    The following are a few example events you can configure

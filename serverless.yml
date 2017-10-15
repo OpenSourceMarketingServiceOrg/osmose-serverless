@@ -84,6 +84,13 @@ functions:
           cors: true
   confirmEmail:
     handler: handlers/confirm-email.sendConfirm
+  postEmail:
+    handler: handlers/ses-post.postEmail
+    events: 
+      - http:
+          path: email
+          method: post
+          cors: true
 
 
 #    The following are a few example events you can configure

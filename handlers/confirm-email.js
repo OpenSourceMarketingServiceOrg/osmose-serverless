@@ -11,9 +11,10 @@ const dynamo = require('../daos/update-item');
 module.exports.sendConfirm = (event, context, callback) => {
 
   console.log("hi!", event);
-  console.log("dynamodb: ", event.Records[0].dynamodb);
 
   event.Records.forEach((record) => {
+
+    console.log("record: ", record);
 
     let emailAddress = record.dynamodb.NewImage.Email.S;
     let first = record.dynamodb.NewImage.FirstName.S;

@@ -53,6 +53,7 @@
     "f:api:put": "serverless invoke local -f emailList -p events/put_event.json",
     "f:api:post": "serverless invoke local -f emailList -p events/post_event.json",
     "f:ses": "serverless invoke local -f saveEmailStatus -p events/ses_event.json --debug",
+    "f:ses:post": "serverless invoke local -f postEmail -p events/ses_post.json --debug",
     "f:con": "npm run f:con:s",
     "f:con:s": "serverless invoke local -f confirmEmail -p events/send_confirm_event.json"
   },

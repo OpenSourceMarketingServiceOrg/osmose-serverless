@@ -1,10 +1,6 @@
 'use strict';
 
 const dynamo = require('../daos/update-item');
-const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB({
-  apiVersion: '2012-08-10'
-});
 
 module.exports.saveEmailStatus = (event, context, callback) => {
 

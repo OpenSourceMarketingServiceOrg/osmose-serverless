@@ -4,12 +4,9 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*', // Required for CORS support to work
   'Access-Control-Allow-Credentials': true // Required for cookies, authorization headers with HTTPS
 }
-const AWS = require('aws-sdk');
 const osmose = require('osmose-email-engine');
 const uuidv4 = require('uuid/v4');
-const dynamodb = new AWS.DynamoDB({
-  apiVersion: '2012-08-10'
-});
+const dynamo = require('../daos/update-item');
 
 module.exports.sendConfirm = (event, context, callback) => {
 
@@ -23,7 +20,12 @@ module.exports.sendConfirm = (event, context, callback) => {
     let last = record.dynamodb.NewImage.LastName.S;
     let key = record.dynamodb.Keys.EmailBinary.B;
     let uuid = uuidv4();
+    console.log("key: ", key);
     console.log("uuid: ", uuid);
+    translateToPostParams(emailAddress, uuid).then((params) => {
+      console.log('params: ', params);
+      dynamo.updateItem(params);
+    });
     let addresses = {
       ToAddresses: [emailAddress]
     };
@@ -33,6 +35,35 @@ module.exports.sendConfirm = (event, context, callback) => {
     };
     let from = 'opensourcemarketingservice@gmail.com';
     console.log('osmose: ', osmose);
-    osmose.osmoseSendEmail(addresses, email, from);
+    //osmose.osmoseSendEmail(addresses, email, from);
+  });
+}
+
+//TODO move to models dir
+function translateToPostParams(emailAddress, uuid) {
+  return new Promise((resolve, reject) => {
+    let params = {
+      "Key": {
+        "EmailBinary": {
+          B: new Buffer(emailAddress).toString("base64")
+        }
+      },
+      "ReturnValues": "NONE",
+      "ExpressionAttributeNames": {
+        "#CU": "ConfirmUUID",
+        "#C": "Confirmed"
+      },
+      "ExpressionAttributeValues": {
+        ":cu": {
+          "S": uuid
+        },
+        ":c": {
+          "BOOL": false
+        }
+      },
+      "UpdateExpression": "SET #CU = :cu, #C = :c",
+      "TableName": "EmailList"
+    };
+    resolve(params);
   });
 }

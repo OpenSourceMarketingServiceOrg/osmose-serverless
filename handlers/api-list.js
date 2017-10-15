@@ -29,7 +29,7 @@ function getItemsFromDynamoDB() {
 
     //TODO move to models dir
     let params = {
-      TableName: "ClientList"
+      TableName: "SubscriberList"
     };
 
     dynamodb.scan(params, (err, data) => {
@@ -72,8 +72,13 @@ function translateToPostParams(event) {
           "S": body.lname
         }
       },
+<<<<<<< HEAD
+      "UpdateExpression": "SET #FN = :fn, #LN = :ln, #EM = :em",
+      "TableName": "SubscriberList"
+=======
       "UpdateExpression": "SET #FN = :fn, #LN = :ln",
       "TableName": "ClientList"
+>>>>>>> fcc611ea7f15d127a8f9785e62a0325628963d32
     };
     resolve(params);
   });
@@ -92,7 +97,7 @@ function translateToDeleteParams(event) {
           S: event.queryStringParameters.email
         }
       },
-      "TableName": "ClientList"
+      "TableName": "SubscriberList"
     };
     resolve(params);
   });

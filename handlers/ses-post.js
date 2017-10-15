@@ -7,7 +7,9 @@ const osmose = require('osmose-email-engine');
 
 module.exports.postEmail = (event, context, callback) => {
     console.log("Going to post a great email!");
+    // console.log(event);
     console.log(event.body);
+    event.body = JSON.parse(event.body);
 
     let addresses = {
         ToAddresses: event.body.to
@@ -18,9 +20,12 @@ module.exports.postEmail = (event, context, callback) => {
     };
     let from = 'opensourcemarketingservice@gmail.com';
 
-    console.log('osmose: ', osmose);
-    console.log('addresses: ', addresses);
-    console.log('email: ', email);
-    
+    console.log("<<<<<<<<<<<<<<<<<<  osmose  >>>>>>>>>>>>>>>>>>>");
+    console.log(osmose);
+    console.log("<<<<<<<<<<<<<<<<<<  addresses  >>>>>>>>>>>>>>>>>>>");
+    console.log(addresses);
+    console.log("<<<<<<<<<<<<<<<<<<  email  >>>>>>>>>>>>>>>>>>>");
+    console.log(email);
+
     osmose.osmoseSendEmail(addresses, email, from);
 }

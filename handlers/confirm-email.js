@@ -11,33 +11,39 @@ const dynamo = require('../daos/update-item');
 module.exports.sendConfirm = (event, context, callback) => {
 
   console.log("hi!", event);
+  if(event.resource) {
 
-  event.Records.forEach((record) => {
+    let confirmId = event.queryStringParameters.confirmId;
 
-    console.log("record: ", record);
+  } else {
 
-    let emailAddress = record.dynamodb.NewImage.Email.S;
-    let first = record.dynamodb.NewImage.FirstName.S;
-    let last = record.dynamodb.NewImage.LastName.S;
-    let key = record.dynamodb.Keys.EmailBinary.B;
-    let uuid = uuidv4();
-    console.log("key: ", key);
-    console.log("uuid: ", uuid);
-    translateToPostParams(emailAddress, uuid).then((params) => {
-      console.log('params: ', params);
-      dynamo.updateItem(params);
+    event.Records.forEach((record) => {
+
+      console.log("record: ", record);
+
+      let emailAddress = record.dynamodb.NewImage.Email.S;
+      let first = record.dynamodb.NewImage.FirstName.S;
+      let last = record.dynamodb.NewImage.LastName.S;
+      let key = record.dynamodb.Keys.EmailBinary.B;
+      let uuid = uuidv4();
+      console.log("key: ", key);
+      console.log("uuid: ", uuid);
+      translateToPostParams(emailAddress, uuid).then((params) => {
+        console.log('params: ', params);
+        dynamo.updateItem(params);
+      });
+      let addresses = {
+        ToAddresses: [emailAddress]
+      };
+      let email = {
+        subject: 'You\'ve Been Signed Up For OSMoSE Mail!',
+        body: '<html><body><h1>Welcome to OSMoSE Mail!</h1><h3>Hi ' + first + '!</h3><p>You\'ve been signed up for OSMoSE Mail!</p></body></html>'
+      };
+      let from = 'opensourcemarketingservice@gmail.com';
+      console.log('osmose: ', osmose);
+      //osmose.osmoseSendEmail(addresses, email, from);
     });
-    let addresses = {
-      ToAddresses: [emailAddress]
-    };
-    let email = {
-      subject: 'You\'ve Been Signed Up For OSMoSE Mail!',
-      body: '<html><body><h1>Welcome to OSMoSE Mail!</h1><h3>Hi ' + first + '!</h3><p>You\'ve been signed up for OSMoSE Mail!</p></body></html>'
-    };
-    let from = 'opensourcemarketingservice@gmail.com';
-    console.log('osmose: ', osmose);
-    //osmose.osmoseSendEmail(addresses, email, from);
-  });
+  }
 }
 
 //TODO move to models dir
@@ -63,7 +69,7 @@ function translateToPostParams(emailAddress, uuid) {
         }
       },
       "UpdateExpression": "SET #CU = :cu, #C = :c",
-      "TableName": "EmailList"
+      "TableName": "ClientList"
     };
     resolve(params);
   });

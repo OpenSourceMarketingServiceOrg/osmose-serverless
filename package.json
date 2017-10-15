@@ -1,12 +1,34 @@
 {
   "name": "osmose-serverless",
   "version": "0.2.2",
-  "description": "OSMoSE serverlesss backend written for AWS Lambda",
+  "description": "OSMoSE serverless backend written for AWS Lambda",
   "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/OpenSourceMarketingServiceOrg/osmos-serverless.git"
   },
+  "contributors": [
+    {
+      "name": "Dan Brown",
+      "email": "danjenator@gmail.com",
+      "url": "https://github.com/Danjenator"
+    },
+    {
+      "name": "Quinn Lawrence",
+      "email": "qtlawrence@outlook",
+      "url": "https://github.com/qtlawrence"
+    },
+    {
+      "name": "Michael Hopkins",
+      "email": "",
+      "url": "https://github.com/hopkinsma"
+    },
+    {
+      "name": "Zach Biri",
+      "email": "",
+      "url": "https://github.com/zabiri"
+    }
+  ],
   "keywords": [
     "lambda",
     "serverless",

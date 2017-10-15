@@ -53,6 +53,9 @@ function translateToPostParams(emailAddress, uuid) {
       "Key": {
         "EmailBinary": {
           B: new Buffer(emailAddress.trim()).toString("base64")
+        },
+        "Email": {
+          S: emailAddress.trim()
         }
       },
       "ReturnValues": "NONE",

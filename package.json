@@ -39,6 +39,7 @@
     "serverless-offline": "3.15.1"
   },
   "dependencies": {
-    "aws-sdk": "2.122.0"
+    "aws-sdk": "2.122.0",
+    "osmose-email-engine": "0.1.1"
   }
 }

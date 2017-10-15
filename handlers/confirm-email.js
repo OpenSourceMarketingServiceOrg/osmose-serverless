@@ -45,7 +45,7 @@ function translateToPostParams(emailAddress, uuid) {
     let params = {
       "Key": {
         "EmailBinary": {
-          B: new Buffer(emailAddress).toString("base64")
+          B: new Buffer(emailAddress.trim()).toString("base64")
         }
       },
       "ReturnValues": "NONE",

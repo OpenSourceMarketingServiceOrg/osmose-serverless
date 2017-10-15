@@ -1,12 +1,34 @@
 {
   "name": "osmose-serverless",
   "version": "0.2.2",
-  "description": "OSMoSE serverlesss backend written for AWS Lambda",
+  "description": "OSMoSE serverless backend written for AWS Lambda",
   "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/OpenSourceMarketingServiceOrg/osmos-serverless.git"
   },
+  "contributors": [
+    {
+      "name": "Dan Brown",
+      "email": "danjenator@gmail.com",
+      "url": "https://github.com/Danjenator"
+    },
+    {
+      "name": "Quinn Lawrence",
+      "email": "qtlawrence@outlook",
+      "url": "https://github.com/qtlawrence"
+    },
+    {
+      "name": "Michael Hopkins",
+      "email": "",
+      "url": "https://github.com/hopkinsma"
+    },
+    {
+      "name": "Zach Biri",
+      "email": "",
+      "url": "https://github.com/zabiri"
+    }
+  ],
   "keywords": [
     "lambda",
     "serverless",
@@ -31,6 +53,7 @@
     "f:api:put": "serverless invoke local -f emailList -p events/put_event.json",
     "f:api:post": "serverless invoke local -f emailList -p events/post_event.json",
     "f:ses": "serverless invoke local -f saveEmailStatus -p events/ses_event.json --debug",
+    "f:ses:post": "serverless invoke local -f postEmail -p events/ses_post.json --debug",
     "f:con": "npm run f:con:s",
     "f:con:s": "serverless invoke local -f confirmEmail -p events/send_confirm_event.json"
   },

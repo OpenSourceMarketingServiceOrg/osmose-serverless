@@ -54,13 +54,15 @@ function translateToPostParams(event) {
       "Key": {
         "EmailBinary": {
           B: emailBinary
+        },
+        "Email": {
+          S: body.email.trim()
         }
       },
       "ReturnValues": "NONE",
       "ExpressionAttributeNames": {
         "#FN": "FirstName",
-        "#LN": "LastName",
-        "#EM": "Email"
+        "#LN": "LastName"
       },
       "ExpressionAttributeValues": {
         ":fn": {
@@ -68,12 +70,9 @@ function translateToPostParams(event) {
         },
         ":ln": {
           "S": body.lname
-        },
-        ":em": {
-          "S": body.email
         }
       },
-      "UpdateExpression": "SET #FN = :fn, #LN = :ln, #EM = :em",
+      "UpdateExpression": "SET #FN = :fn, #LN = :ln",
       "TableName": "ClientList"
     };
     resolve(params);
@@ -88,6 +87,9 @@ function translateToDeleteParams(event) {
       "Key": {
         "EmailBinary": {
           B: emailBinary
+        },
+        "Email": {
+          S: event.queryStringParameters.email
         }
       },
       "TableName": "ClientList"

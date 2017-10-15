@@ -6,7 +6,8 @@ const corsHeaders = {
 }
 const AWS = require('aws-sdk');
 const osmose = require('osmose-email-engine');
-let dynamodb = new AWS.DynamoDB({
+const uuidv4 = require('uuid/v4');
+const dynamodb = new AWS.DynamoDB({
   apiVersion: '2012-08-10'
 });
 
@@ -21,6 +22,8 @@ module.exports.sendConfirm = (event, context, callback) => {
     let first = record.dynamodb.NewImage.FirstName.S;
     let last = record.dynamodb.NewImage.LastName.S;
     let key = record.dynamodb.Keys.EmailBinary.B;
+    let uuid = uuidv4();
+    console.log("uuid: ", uuid);
     let addresses = {
       ToAddresses: [emailAddress]
     };

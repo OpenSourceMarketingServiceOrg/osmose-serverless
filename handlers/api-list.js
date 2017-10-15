@@ -4,24 +4,11 @@ const corsHeaders = {
   'Access-Control-Allow-Origin' : '*', // Required for CORS support to work
   'Access-Control-Allow-Credentials' : true // Required for cookies, authorization headers with HTTPS
 }
-let AWS = require('aws-sdk');
-let dynamodb = new AWS.DynamoDB({
+const dynamo = require('../daos/update-item');
+const AWS = require('aws-sdk');
+const dynamodb = new AWS.DynamoDB({
   apiVersion: '2012-08-10'
 });
-
-function postToDynamoDB(params) {
-  return new Promise((resolve, reject) => {
-    dynamodb.updateItem(params, (err, data) => {
-      if (err) {
-        console.log(err);
-        console.log("These params were rejected: ", params);
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    })
-  })
-}
 
 function deleteItemFromDynamoDB(params) {
   return new Promise((resolve, reject) => {
@@ -142,7 +129,7 @@ module.exports.emailList = (event, context, callback) => {
     });
   } else if (event.httpMethod === "POST") {
     translateToPostParams(event).then((params)=>{
-      postToDynamoDB(params).then((res) => {
+      dynamo.updateItem(params).then((res) => {
         response = {
           statusCode: 200,
           headers: corsHeaders,
@@ -167,7 +154,7 @@ module.exports.emailList = (event, context, callback) => {
     });
   } else if (event.httpMethod === "PUT") {
     translateToPostParams(event).then((params)=>{
-      postToDynamoDB(params).then((res) => {
+      dynamo.updateItem(params).then((res) => {
         response = {
           statusCode: 200,
           headers: corsHeaders,

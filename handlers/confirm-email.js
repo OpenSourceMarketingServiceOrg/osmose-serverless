@@ -7,13 +7,47 @@ const corsHeaders = {
 const osmose = require('osmose-email-engine');
 const uuidv4 = require('uuid/v4');
 const dynamo = require('../daos/update-item');
+const AWS = require('aws-sdk');
+const dynamodb = new AWS.DynamoDB({
+  apiVersion: '2012-08-10'
+});
 
 module.exports.sendConfirm = (event, context, callback) => {
 
   console.log("hi!", event);
-  if(event.resource) {
+  if (event.resource) {
 
     let confirmId = event.queryStringParameters.confirmId;
+
+    console.log("confirmId: ", confirmId);
+
+    // let params = {
+    //   ExpressionAttributeValues: {
+    //     ":id": {
+    //       S: confirmId
+    //     }
+    //   },
+    //   KeyConditionExpression: "ConfirmUUID = :id",
+    //   ProjectionExpression: "Email",
+    //   TableName: "ClientList"
+    // }
+    let params = {
+      ExpressionAttributeValues: {
+        ":id": {
+          S: confirmId
+        }
+      },
+      FilterExpression: "ConfirmUUID = :id",
+      TableName: "ClientList"
+    };
+
+    console.log("params: ", params);
+
+    dynamodb.scan(params, (err, data) => {
+      if (err) console.log(err, err.stack); // an error occurred
+      else console.log(data); // successful response
+    })
+
 
   } else {
 

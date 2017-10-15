@@ -1,0 +1,35 @@
+{
+  "Records": [{
+    "eventID": "d5d852355705c9f764dfb5228af7279a",
+    "eventName": "INSERT",
+    "eventVersion": "1.1",
+    "eventSource": "aws:dynamodb",
+    "awsRegion": "us-east-1",
+    "dynamodb": {
+      "ApproximateCreationDateTime": 1508025480,
+      "Keys": {
+        "EmailBinary": {
+          "B": "WkROa05UVmtRRzFoYVd3dVkyOXQ="
+        }
+      },
+      "NewImage": {
+        "Email": {
+          "S": "danjenator@gmail.com"
+        },
+        "EmailBinary": {
+          "B": "WkROa05UVmtRRzFoYVd3dVkyOXQ="
+        },
+        "FirstName": {
+          "S": "ddd"
+        },
+        "LastName": {
+          "S": "ddd"
+        }
+      },
+      "SequenceNumber": "90133900000000029939325313",
+      "SizeBytes": 105,
+      "StreamViewType": "NEW_AND_OLD_IMAGES"
+    },
+    "eventSourceARN": "arn:aws:dynamodb:us-east-1:420906024005:table/EmailList/stream/2017-10-14T23:32:41.231"
+  }]
+}

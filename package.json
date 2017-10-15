@@ -24,13 +24,15 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "npm run f:ses && npm run f:api",
+    "start": "npm run f:ses && npm run f:api && npm run f:con",
     "f:api": "npm run f:api:get && npm run f:api:put && npm run f:api:delete && npm run f:api:post",
     "f:api:get": "serverless invoke local -f emailList -p events/get_event.json",
     "f:api:delete": "serverless invoke local -f emailList -p events/delete_event.json",
     "f:api:put": "serverless invoke local -f emailList -p events/put_event.json",
     "f:api:post": "serverless invoke local -f emailList -p events/post_event.json",
-    "f:ses": "serverless invoke local -f saveEmailStatus -p events/ses_event.json --debug"
+    "f:ses": "serverless invoke local -f saveEmailStatus -p events/ses_event.json --debug",
+    "f:con": "npm run f:con:s",
+    "f:con:s": "serverless invoke local -f confirmEmail -p events/send_confirm_event.json"
   },
   "devDependencies": {
     "serverless": "1.17.0",

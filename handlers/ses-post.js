@@ -18,7 +18,7 @@ module.exports.postEmail = (event, context, callback) => {
         subject: event.body.subject,
         body: event.body.content
     };
-    let from = 'opensourcemarketingservice@gmail.com';
+    let from = event.body.from;
 
     console.log("<<<<<<<<<<<<<<<<<<  osmose  >>>>>>>>>>>>>>>>>>>");
     console.log(osmose);

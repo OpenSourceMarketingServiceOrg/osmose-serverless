@@ -72,13 +72,8 @@ function translateToPostParams(event) {
           "S": body.lname
         }
       },
-<<<<<<< HEAD
-      "UpdateExpression": "SET #FN = :fn, #LN = :ln, #EM = :em",
-      "TableName": "SubscriberList"
-=======
       "UpdateExpression": "SET #FN = :fn, #LN = :ln",
       "TableName": "ClientList"
->>>>>>> fcc611ea7f15d127a8f9785e62a0325628963d32
     };
     resolve(params);
   });

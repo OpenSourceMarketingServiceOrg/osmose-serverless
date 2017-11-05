@@ -29,7 +29,7 @@ function getItemsFromDynamoDB() {
 
     //TODO move to models dir
     let params = {
-      TableName: "SubscriberList"
+      TableName: "ClientList"
     };
 
     dynamodb.scan(params, (err, data) => {
@@ -92,7 +92,7 @@ function translateToDeleteParams(event) {
           S: event.queryStringParameters.email
         }
       },
-      "TableName": "SubscriberList"
+      "TableName": "ClientList"
     };
     resolve(params);
   });

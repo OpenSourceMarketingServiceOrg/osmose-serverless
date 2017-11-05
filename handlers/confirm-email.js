@@ -72,7 +72,7 @@ function translateToPostParams(emailAddress, uuid) {
         }
       },
       "UpdateExpression": "SET #CU = :cu, #C = :c",
-      "TableName": "SubscriberList"
+      "TableName": "ClientList"
     };
     resolve(params);
   });

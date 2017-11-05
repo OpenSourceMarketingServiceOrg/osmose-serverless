@@ -11,9 +11,7 @@ module.exports.postEmail = (event, context, callback) => {
     console.log(event.body);
     event.body = JSON.parse(event.body);
 
-    let addresses = {
-        ToAddresses: event.body.to
-      };
+    let addresses =  event.body.to;
     let email = {
         subject: event.body.subject,
         body: event.body.content

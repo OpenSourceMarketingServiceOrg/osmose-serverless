@@ -62,7 +62,7 @@ functions:
   saveEmailStatus:
     handler: handlers/ses-sns.saveEmailStatus
     events:
-      - sns: 
+      - sns: arn:aws:sns:us-east-1:420906024005:osmose_mail
   emailList: # Function name
     handler: handlers/api-list.emailList # Reference to file handler.js & exported function 'users'
     events: # All events associated with this function

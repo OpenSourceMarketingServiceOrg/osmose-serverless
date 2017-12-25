@@ -19,7 +19,7 @@ module.exports.postEmail = (event, context, callback) => {
     let from = event.body.from;
 
     console.log("<<<<<<<<<<<<<<<<<<  osmose  >>>>>>>>>>>>>>>>>>>");
-    console.log(osmose);
+    console.log(from);
     console.log("<<<<<<<<<<<<<<<<<<  addresses  >>>>>>>>>>>>>>>>>>>");
     console.log(addresses);
     console.log("<<<<<<<<<<<<<<<<<<  email  >>>>>>>>>>>>>>>>>>>");

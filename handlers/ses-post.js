@@ -1,7 +1,7 @@
 const corsHeaders = {
-    'Access-Control-Allow-Origin' : '*', // Required for CORS support to work
-    'Access-Control-Allow-Credentials' : true // Required for cookies, authorization headers with HTTPS
-  }
+    'Access-Control-Allow-Origin': '*', // Required for CORS support to work
+    'Access-Control-Allow-Credentials': true // Required for cookies, authorization headers with HTTPS
+}
 
 const osmose = require('osmose-email-engine');
 
@@ -11,19 +11,21 @@ module.exports.postEmail = (event, context, callback) => {
     console.log(event.body);
     event.body = JSON.parse(event.body);
 
-    let addresses =  event.body.to;
-    let email = {
-        subject: event.body.subject,
-        body: event.body.content
-    };
-    let from = event.body.from;
+    event.body.to.forEach((toAddy) => {
 
-    console.log("<<<<<<<<<<<<<<<<<<  osmose  >>>>>>>>>>>>>>>>>>>");
-    console.log(from);
-    console.log("<<<<<<<<<<<<<<<<<<  addresses  >>>>>>>>>>>>>>>>>>>");
-    console.log(addresses);
-    console.log("<<<<<<<<<<<<<<<<<<  email  >>>>>>>>>>>>>>>>>>>");
-    console.log(email);
+        let email = {
+            subject: event.body.subject,
+            body: event.body.content
+        };
+        let from = event.body.from;
 
-    osmose.osmoseSendEmail(addresses, email, from);
+        console.log("<<<<<<<<<<<<<<<<<<  osmose  >>>>>>>>>>>>>>>>>>>");
+        console.log(from);
+        console.log("<<<<<<<<<<<<<<<<<<  toAddy  >>>>>>>>>>>>>>>>>>>");
+        console.log(toAddy);
+        console.log("<<<<<<<<<<<<<<<<<<  email  >>>>>>>>>>>>>>>>>>>");
+        console.log(email);
+
+        osmose.osmoseSendEmail(toAddy, email, from);
+    });
 }

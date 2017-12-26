@@ -11,7 +11,7 @@ module.exports.postEmail = (event, context, callback) => {
     console.log(event.body);
     event.body = JSON.parse(event.body);
 
-    event.body.to.forEach((toAddy) => {
+    event.body.to.ToAddresses.forEach((toAddy) => {
 
         let email = {
             subject: event.body.subject,
@@ -28,4 +28,13 @@ module.exports.postEmail = (event, context, callback) => {
 
         osmose.osmoseSendEmail(toAddy, email, from);
     });
+
+    response = {
+        statusCode: 200,
+        headers: corsHeaders,
+        body: JSON.stringify({
+            message: "EMAIL SENT!"
+        })
+    };
+    callback(null, response);
 }

@@ -7,7 +7,8 @@
         "type": "git",
         "url": "https://github.com/OpenSourceMarketingServiceOrg/osmos-serverless.git"
     },
-    "contributors": [{
+    "contributors": [
+        {
             "name": "Dan Brown",
             "email": "danjenator@gmail.com",
             "url": "https://github.com/Danjenator"

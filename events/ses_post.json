@@ -1,1 +1,57 @@
-{}
+{ 
+    "resource": "/email",
+    "path": "/email",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept": "application/json",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Accept-Language": "en-US,en;q=0.8",
+        "Authorization": "Bearer RandomGeneratedToken",
+        "CloudFront-Forwarded-Proto": "https",
+        "CloudFront-Is-Desktop-Viewer": "true",
+        "CloudFront-Is-Mobile-Viewer": "false",
+        "CloudFront-Is-SmartTV-Viewer": "false",
+        "CloudFront-Is-Tablet-Viewer": "false",
+        "CloudFront-Viewer-Country": "US",
+        "content-type": "application/json;charset=UTF-8",
+        "Host": "fqyy1uh5ui.execute-api.us-east-1.amazonaws.com",
+        "origin": "http://localhost:8080",
+        "Referer": "http://localhost:8080/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36",
+        "Via": "2.0 01c709bf4d0a9287f34f26b826f9f235.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Id": "Ugt8Am4WZIPmjO1b5Tcct7s-GpUI4WF0EuKKg-uJw5J_PxD9dXDNQQ==",
+        "X-Amzn-Trace-Id": "Root=1-59e390f1-72c10c6a40633d79671c9ea6",
+        "X-Forwarded-For": "162.206.90.166, 52.46.30.97",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https" 
+    },
+    "queryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "path": "/dev0/email",
+        "accountId": "420906024005",
+        "resourceId": "7nyrmi",
+        "stage": "dev0",
+        "requestId": "6bde5e27-b1c8-11e7-970b-dde26c714377",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "apiKey": "",
+            "sourceIp": "162.206.90.166",
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36",
+            "user": null 
+        },
+        "resourcePath": "/email",
+        "httpMethod": "POST",
+        "apiId": "fqyy1uh5ui" 
+    },
+    "body": { "to":["qtlaw5@gmail.com"], "subject":"The Best Email", "content":"<html><head></head><body><html><head></head><body><p>Hello,</p><p><br></p><p>This is an amazing email from OZMoSE!</p><p><br></p><p>Enjoy,</p><p>OSMoSe Team</p></body></html></body></html>" },
+    "isBase64Encoded": false 
+}

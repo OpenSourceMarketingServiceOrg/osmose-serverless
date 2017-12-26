@@ -13,6 +13,14 @@ module.exports.postEmail = (event, context, callback) => {
 
     event.body.to.ToAddresses.forEach((toAddy) => {
 
+        let destination = {
+            BccAddresses: event.body.to.BccAddresses,
+            CcAddresses: event.body.to.CcAddresses,
+            ToAddresses: [
+                toAddy
+            ]
+        }
+
         let email = {
             subject: event.body.subject,
             body: event.body.content
@@ -21,12 +29,12 @@ module.exports.postEmail = (event, context, callback) => {
 
         console.log("<<<<<<<<<<<<<<<<<<  osmose  >>>>>>>>>>>>>>>>>>>");
         console.log(from);
-        console.log("<<<<<<<<<<<<<<<<<<  toAddy  >>>>>>>>>>>>>>>>>>>");
-        console.log(toAddy);
+        console.log("<<<<<<<<<<<<<<<<<<  destination  >>>>>>>>>>>>>>>>>>>");
+        console.log(destination);
         console.log("<<<<<<<<<<<<<<<<<<  email  >>>>>>>>>>>>>>>>>>>");
         console.log(email);
 
-        osmose.osmoseSendEmail(toAddy, email, from);
+        osmose.osmoseSendEmail(destination, email, from);
     });
 
     response = {

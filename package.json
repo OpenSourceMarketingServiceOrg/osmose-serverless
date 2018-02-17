@@ -7,7 +7,8 @@
         "type": "git",
         "url": "https://github.com/OpenSourceMarketingServiceOrg/osmos-serverless.git"
     },
-    "contributors": [{
+    "contributors": [
+        {
             "name": "Dan Brown",
             "email": "danjenator@gmail.com",
             "url": "https://github.com/Danjenator"
@@ -58,7 +59,7 @@
     },
     "dependencies": {
         "aws-sdk": "2.122.0",
-        "osmose-email-engine": "file:///home/starsmore/Projects/osmose/osmose-email-engine",
+        "osmose-email-engine": "1.0.0",
         "uuid": "3.1.0"
     }
 }

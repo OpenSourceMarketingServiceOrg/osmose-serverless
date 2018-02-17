@@ -1,29 +1,18 @@
 'use strict';
 
-var AWS = require('aws-sdk');
-var dynamodb = new AWS.DynamoDB({
-  apiVersion: '2012-08-10'
-});
+const dynamo = require('../daos/update-item');
 
 module.exports.saveEmailStatus = (event, context, callback) => {
 
   console.log("event: ", event);
 
-  var addressList = [];
+  let addressList = [];
   //TODO add for each for Records
-  var message = JSON.parse(event.Records[0].Sns.Message);
-  console.log("mail: ", message.mail);
-  console.log("headers: ", message.mail.headers);
-  console.log("headers common: ", message.mail.headers);
-  var notificationType = message.notificationType;
-  console.log("notificationType", notificationType);
-  var delivery = message.delivery;
-  console.log("delivery", delivery);
-  var mail = message.mail;
-  console.log("mail", mail);
-  var dest = mail.destination;
-  console.log("dest", dest);
-
+  let message = JSON.parse(event.Records[0].Sns.Message);
+  let notificationType = message.notificationType;
+  let delivery = message.delivery;
+  let mail = message.mail;
+  let dest = mail.destination;
 
   if (dest !== null) {
     dest.forEach((addr) => {
@@ -31,7 +20,7 @@ module.exports.saveEmailStatus = (event, context, callback) => {
     });
 
 		//TODO add binary  for status
-    var status;
+    let status;
     if (message.notificationType === "Delivery") {
       status = "Delivered";
     } else if (message.mail.bounce) {
@@ -44,10 +33,10 @@ module.exports.saveEmailStatus = (event, context, callback) => {
       status = "Complaint";
     }
 
-    var messageId = message.mail.messageId;
+    let messageId = message.mail.messageId;
 
 		//TODO move to database models folder
-    var params = {
+    let params = {
       "Key": {
         "MessageId": {
           "S": messageId
@@ -70,25 +59,10 @@ module.exports.saveEmailStatus = (event, context, callback) => {
       "TableName": "SentEmailStatus"
     };
 
-    postToDynamoDB(params).then((res) => {
+    dynamo.updateItem(params).then((res) => {
       console.log("resForPost", res);
     });
   } else {
     console.log("Destination was null ");
   }
 };
-
-//TODO move to database module
-function postToDynamoDB(params) {
-  return new Promise((resolve, reject) => {
-    dynamodb.updateItem(params, (err, data) => {
-      if (err) {
-        console.log(err);
-        console.log("These params were rejected: ", params);
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    })
-  });
-}

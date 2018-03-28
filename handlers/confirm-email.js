@@ -12,13 +12,9 @@ const dynamoDoc = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 
 function sendConfirmEmailToUser(record) {
 
-    let first = record.dynamodb.NewImage.FirstName.S;
-    let last = record.dynamodb.NewImage.LastName.S;
-    let emailAddress = record.dynamodb.NewImage.Email.S;
-    let confirmUUID = record.dynamodb.NewImage.ConfirmUUID.S;
-    let confirmed = record.dynamodb.NewImage.Confirmed.BOOL;
-    let emailBinary = new Buffer(emailAddress.trim()).toString("base64");
-    if(!confirmed) {
+    let emailAddress = record.dynamodb.NewImage.Email.S.trim();
+    let emailBinary = new Buffer(emailAddress).toString("base64");
+    if(!record.dynamodb.NewImage.Confirmed.BOOL) {
         let email = {
             from: 'dezzNutz@osmose.tools',
             to: {
@@ -27,17 +23,16 @@ function sendConfirmEmailToUser(record) {
                 ToAddresses: [emailAddress]
             },
             subject: 'You\'ve Been Signed Up For OSMoSE Mail!',
-            content: '<html><body><h1>Welcome to OSMoSE Mail!</h1><h3>Hi ' + first + '!</h3><p>You\'ve been signed up for OSMoSE Mail!</p><p>Please click this link to <a href="https://zsazrlvshe.execute-api.us-east-1.amazonaws.com/dev1/confirm?confirmUuid=' + confirmUUID + '">confirm</a>.</p></body></html>'
+            content: '<html><body><h1>Welcome to OSMoSE Mail!</h1><h3>Hi ' + record.dynamodb.NewImage.FirstName.S + '!</h3><p>You\'ve been signed up for OSMoSE Mail!</p><p>Please click this link to <a href="https://zsazrlvshe.execute-api.us-east-1.amazonaws.com/dev1/confirm?confirmUuid=' + record.dynamodb.NewImage.ConfirmUUID.S + '">confirm</a>.</p></body></html>'
         };
-        osmose.osmoseSendEmail(email);    
-        let emailBinary = new Buffer(emailAddress.trim()).toString("base64");
+        osmose.osmoseSendEmail(email);
         let params = {
             "Key": {
                 "EmailBinary": {
                     B: emailBinary
                 },
                 "Email": {
-                    S: emailAddress.trim()
+                    S: emailAddress
                 }
             },
             "ReturnValues": "NONE",
@@ -60,123 +55,87 @@ function sendConfirmEmailToUser(record) {
     }
 }
 
+function confirmUserWithUuid(uuid) {
+    return new Promise((resolve, reject) => {
+        let params = {
+            TableName: 'ClientList', /* required */
+            IndexName: 'UUID',
+            ExpressionAttributeValues: {
+                ':cu':  uuid
+            },
+            KeyConditionExpression: 'ConfirmUUID = :cu'
+        };
+        dynamoDoc.query(params, (err, data) => {
+            let response;
+            if (err) {
+                console.log("ERROR: ", err);
+                console.log("These params were rejected: ", params);
+                response = {
+                    statusCode: 500,
+                    headers: corsHeaders,
+                    body: 'Internal Server Error'
+                };
+                resolve(response);                       
+            } else {
+                if(data.Count > 0) {
+                    data.Items.forEach((item) => {
+                        let params = {
+                            "Key": {
+                                "EmailBinary": {
+                                    B: item.EmailBinary
+                                },
+                                "Email": {
+                                    S: item.Email
+                                }
+                            },
+                            "ReturnValues": "NONE",
+                            "ExpressionAttributeNames": {
+                                "#CD": "Confirmed"
+                            },
+                            "ExpressionAttributeValues": {
+                                ":cd": {
+                                    "BOOL": true
+                                }
+                            },
+                            "UpdateExpression": "SET #CD = :cd",
+                            "TableName": "ClientList"
+                        };
+                        dynamo.updateItem(params).then((res) => {
+                            response = {
+                                statusCode: 200,
+                                headers: corsHeaders,
+                                body: JSON.stringify({
+                                    message: "CONFRIM IT!",
+                                    input: res
+                                })
+                            };
+                            resolve(response);
+                        }).catch((err) => {
+                            console.log("ERROR: ", err);
+                        });                                 
+                    });
+                } else {
+                    response = {
+                        statusCode: 400,
+                        headers: corsHeaders,
+                        body: 'Bad Request'
+                    };                
+                    resolve(response);
+                }
+            }
+        });
+    });
+}
+
 module.exports.sendConfirm = (event, context, callback) => {
-    console.log("hi!", event);
     if (event.resource) {
-
+        // this section is for the API
         let response;
-        console.log('event.httpMethod: ', event.httpMethod);
         if (event.httpMethod === "GET") {
-            console.log('event.queryStringParameters.confirmUUID: ', event.queryStringParameters.confirmUuid);
-            if(event.queryStringParameters.confirmUuid) {       
-                console.log('in the if');
-                let params = {
-                    TableName: 'ClientList', /* required */
-                    IndexName: 'UUID',
-                    ExpressionAttributeValues: {
-                        ':cu':  event.queryStringParameters.confirmUuid
-                    },
-                    KeyConditionExpression: 'ConfirmUUID = :cu'
-                  };
-                console.log('confirem email params: ', params);
-                dynamoDoc.query(params, (err, data) => {
-                    if (err) {
-                        console.log("ERROR: ", err);
-                        console.log("These params were rejected: ", params);
-                    } else {
-                        console.log('data: ', data);
-
-
-                        if(data.Count > 0) {
-                            data.Items.forEach((item) => {
-                                let params = {
-                                    "Key": {
-                                        "EmailBinary": {
-                                            B: item.EmailBinary
-                                        },
-                                        "Email": {
-                                            S: item.Email
-                                        }
-                                    },
-                                    "ReturnValues": "NONE",
-                                    "ExpressionAttributeNames": {
-                                        "#CD": "Confirmed"
-                                    },
-                                    "ExpressionAttributeValues": {
-                                        ":cd": {
-                                            "BOOL": true
-                                        }
-                                    },
-                                    "UpdateExpression": "SET #CD = :cd",
-                                    "TableName": "ClientList"
-                                };
-                                console.log('confirming with these params: ', params);
-                                dynamo.updateItem(params).then((res) => {
-                                    console.log('updateSuccess: ', res);
-                                    response = {
-                                        statusCode: 200,
-                                        headers: corsHeaders,
-                                        body: JSON.stringify({
-                                            message: "CONFRIM IT!",
-                                            input: res
-                                        })
-                                    };
-                                    callback(null, response);
-                                }).catch((err) => {
-                                    console.log("ERROR: ", err);
-                                });                                 
-                            });
-                        } else {
-                            //count was 0 or less, so throw error
-                        }
-
-                
-                        // if(data.Count > 0) {
-                        //     let params = {
-                        //         "Key": {
-                        //             "EmailBinary": {
-                        //                 B: emailBinary
-                        //             },
-                        //             "Email": {
-                        //                 S: emailAddress.trim()
-                        //             }
-                        //         },
-                        //         "ReturnValues": "NONE",
-                        //         "ExpressionAttributeNames": {
-                        //             "#CD": "Confirmed"
-                        //         },
-                        //         "ExpressionAttributeValues": {
-                        //             ":cd": {
-                        //                 "BOOL": true
-                        //             }
-                        //         },
-                        //         "UpdateExpression": "SET #CD = :cd",
-                        //         "TableName": "ClientList"
-                        //     };
-                        //     console.log('confirming with these params: ', params);
-                        //     dynamo.updateItem(params).then((res) => {
-                        //         console.log('updateSuccess: ', res);
-                        //         response = {
-                        //             statusCode: 200,
-                        //             headers: corsHeaders,
-                        //             body: JSON.stringify({
-                        //                 message: "UPDATE IT!",
-                        //                 input: res
-                        //             })
-                        //         };
-                        // callback(null, response);
-                        //     }).catch((err) => {
-                        //         console.log("ERROR: ", err);
-                        //     });                                                    
-                        // } else {
-                        //     response = {
-                        //         statusCode: 400,
-                        //         headers: corsHeaders,
-                        //         body: 'Bad Request'
-                        //     }; 
-                        // callback(null, response);
-                        // }
-                    }
+            if(event.queryStringParameters.confirmUuid) {
+                confirmUserWithUuid(event.queryStringParameters.confirmUuid).then(res => {
+                    response = res;
+                    callback(null, response);
                 });
             } else {
                 response = {
@@ -195,21 +154,17 @@ module.exports.sendConfirm = (event, context, callback) => {
             callback(null, response);
         }
     } else {
-        console.log('records length: ', event.Records.length);
+        //this section is for the DynamoDBStreams event from the ClientList table
         event.Records.forEach((record) => {
-            console.log("record: ", record);
             if(record.eventName === 'INSERT') {
                 if(!record.dynamodb.NewImage.Confirmed.BOOL && !record.dynamodb.NewImage.ConfirmedEmailSent.BOOL) {
                     sendConfirmEmailToUser(record);
-                } else {
-                    console.log('email already sent or confirmed');
                 }
             } else {
                 console.log('record not insert: ', record.eventName);
                 if(record.dynamodb.Keys) {
                     console.log('record.dynamodb.Keys.Email: ', record.dynamodb.Keys.Email);
-                }
-                
+                }              
             }         
         });
     }

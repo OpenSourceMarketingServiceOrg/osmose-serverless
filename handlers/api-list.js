@@ -48,7 +48,6 @@ function getItemsFromDynamoDB() {
 function translateToPostParams(event, uuid) {
     return new Promise((resolve, reject) => {
         let body = JSON.parse(event.body);
-        console.log("body: ", body);
         let emailBinary = new Buffer(body.email.trim()).toString("base64");
         let params = {
             "Key": {
@@ -90,7 +89,6 @@ function translateToPostParams(event, uuid) {
 
 //TODO move to models dir
 function translateToDeleteParams(event) {
-    console.log("delete event: ", event);
     return new Promise((resolve, reject) => {
         let emailBinary = new Buffer(event.queryStringParameters.emailToDelete).toString("base64")
         let params = {
@@ -109,7 +107,6 @@ function translateToDeleteParams(event) {
 }
 
 function getUUID() {
-    console.log('in GetUUID');
     return new Promise((resolve, reject) => {
         let uuid = uuidv4();
         let params = {
@@ -120,7 +117,6 @@ function getUUID() {
             },
             KeyConditionExpression: 'ConfirmUUID = :cu'
           };
-        console.log('getUUID params: ', params);
         dynamoDoc.query(params, (err, data) => {
             if (err) {
                 console.log("ERROR: ", err);
@@ -142,7 +138,6 @@ function getUUID() {
 
 module.exports.emailList = (event, context, callback) => {
 
-    console.log("event.httpMethod", event.httpMethod);
     let response;
     let items;
     let emails = [];
@@ -150,7 +145,6 @@ module.exports.emailList = (event, context, callback) => {
     if (event.httpMethod === "GET") {
         getItemsFromDynamoDB().then((res) => {
             items = res.Items;
-            console.log("items: ", items);
             let res0 = {
                 "title": "Email List",
                 "emailList": items,
@@ -163,7 +157,7 @@ module.exports.emailList = (event, context, callback) => {
             };
             callback(null, response);
         }).catch((err) => {
-            console.log("ERROR: ", err);
+            console.error("ERROR: ", err);
             response = {
                 statusCode: err.statusCode,
                 headers: corsHeaders,
@@ -186,7 +180,7 @@ module.exports.emailList = (event, context, callback) => {
                     };
                     callback(null, response);
                 }).catch((err) => {
-                    console.log("ERROR: ", err);
+                    console.error("ERROR: ", err);
                     response = {
                         statusCode: err.statusCode,
                         headers: corsHeaders,
@@ -212,7 +206,7 @@ module.exports.emailList = (event, context, callback) => {
                 };
                 callback(null, response);
             }).catch((err) => {
-                console.log("ERROR: ", err);
+                console.error("ERROR: ", err);
                 response = {
                     statusCode: err.statusCode,
                     headers: corsHeaders,
@@ -227,7 +221,6 @@ module.exports.emailList = (event, context, callback) => {
     } else if (event.httpMethod === "DELETE") {
         translateToDeleteParams(event).then((params) => {
             deleteItemFromDynamoDB(params).then((res) => {
-                console.log("resForDelete: ", res);
                 response = {
                     statusCode: 200,
                     headers: corsHeaders,
@@ -237,7 +230,7 @@ module.exports.emailList = (event, context, callback) => {
                 };
                 callback(null, response);
             }).catch((err) => {
-                console.log("ERROR: ", err);
+                console.error("ERROR: ", err);
                 response = {
                     statusCode: err.statusCode,
                     headers: corsHeaders,

@@ -4,7 +4,7 @@ const dynamo = require('../daos/update-item');
 
 module.exports.saveEmailStatus = (event, context, callback) => {
 
-  console.log("event: ", event);
+  console.log("event: ", event.Records[0].Sns.Message);
 
   let addressList = [];
   //TODO add for each for Records
@@ -58,6 +58,8 @@ module.exports.saveEmailStatus = (event, context, callback) => {
       "UpdateExpression": "SET #AL = :al, #S = :s",
       "TableName": "SentEmailStatus"
     };
+
+    console.log('params: ', params);
 
     dynamo.updateItem(params).then((res) => {
       console.log("resForPost", res);

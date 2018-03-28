@@ -6,9 +6,9 @@ const corsHeaders = {
 }
 const dynamo = require('../daos/update-item');
 const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB({
-    apiVersion: '2012-08-10'
-});
+const dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+const dynamoDoc = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+const uuidv4 = require('uuid/v4');
 
 function deleteItemFromDynamoDB(params) {
     return new Promise((resolve, reject) => {
@@ -40,16 +40,16 @@ function getItemsFromDynamoDB() {
             } else {
                 resolve(data);
             }
-        })
+        });
     });
 }
 
 //TODO move to models dir
-function translateToPostParams(event) {
+function translateToPostParams(event, uuid) {
     return new Promise((resolve, reject) => {
         let body = JSON.parse(event.body);
         console.log("body: ", body);
-        let emailBinary = new Buffer(body.email).toString("base64");
+        let emailBinary = new Buffer(body.email.trim()).toString("base64");
         let params = {
             "Key": {
                 "EmailBinary": {
@@ -75,6 +75,15 @@ function translateToPostParams(event) {
             "UpdateExpression": "SET #FN = :fn, #LN = :ln",
             "TableName": "ClientList"
         };
+        if(uuid) {
+            params.ExpressionAttributeNames['#CU'] = "ConfirmUUID";
+            params.ExpressionAttributeNames['#CD'] = "Confirmed";
+            params.ExpressionAttributeNames['#CS'] = "ConfirmedEmailSent";
+            params.ExpressionAttributeValues[':cu'] = { "S": uuid };
+            params.ExpressionAttributeValues[':cd'] = { "BOOL": false };
+            params.ExpressionAttributeValues[':cs'] = { "BOOL": false };
+            params.UpdateExpression = params.UpdateExpression + ', #CU = :cu, #CD = :cd, #CS = :cs';
+        }
         resolve(params);
     });
 }
@@ -96,6 +105,38 @@ function translateToDeleteParams(event) {
             "TableName": "ClientList"
         };
         resolve(params);
+    });
+}
+
+function getUUID() {
+    console.log('in GetUUID');
+    return new Promise((resolve, reject) => {
+        let uuid = uuidv4();
+        var params = {
+            TableName: 'ClientList', /* required */
+            IndexName: 'UUID',
+            ExpressionAttributeValues: {
+                ':cu':  uuid
+            },
+            KeyConditionExpression: 'ConfirmUUID = :cu'
+          };
+        console.log('getUUID params: ', params);
+        dynamoDoc.query(params, (err, data) => {
+            if (err) {
+                console.log("ERROR: ", err);
+                console.log("These params were rejected: ", params);
+                reject(err);
+            } else {
+                if(data.Count === 0) {
+                    resolve(uuid);
+                } else {
+                    console.log('uuid has been used');
+                    getUUID().then((results) => {
+                        resolve(results);
+                    });
+                }
+            }
+        });
     });
 }
 
@@ -131,28 +172,31 @@ module.exports.emailList = (event, context, callback) => {
             callback(null, response);
         });
     } else if (event.httpMethod === "POST") {
-        translateToPostParams(event).then((params) => {
-            dynamo.updateItem(params).then((res) => {
-                response = {
-                    statusCode: 200,
-                    headers: corsHeaders,
-                    body: JSON.stringify({
-                        message: "POST IT!",
-                        input: res
-                    })
-                };
-                callback(null, response);
-            }).catch((err) => {
-                console.log("ERROR: ", err);
-                response = {
-                    statusCode: err.statusCode,
-                    headers: corsHeaders,
-                    body: JSON.stringify({
-                        message: "ERROR IT!",
-                        input: err
-                    })
-                };
-                callback(null, response);
+
+        getUUID().then((uuid) => {
+            translateToPostParams(event, uuid).then((params) => {
+                dynamo.updateItem(params).then((res) => {
+                    response = {
+                        statusCode: 200,
+                        headers: corsHeaders,
+                        body: JSON.stringify({
+                            message: "POST IT!",
+                            input: res
+                        })
+                    };
+                    callback(null, response);
+                }).catch((err) => {
+                    console.log("ERROR: ", err);
+                    response = {
+                        statusCode: err.statusCode,
+                        headers: corsHeaders,
+                        body: JSON.stringify({
+                            message: "ERROR IT!",
+                            input: err
+                        })
+                    };
+                    callback(null, response);
+                });
             });
         });
     } else if (event.httpMethod === "PUT") {

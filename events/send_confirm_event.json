@@ -1,7 +1,7 @@
 {
   "Records": [{
     "eventID": "d5d852355705c9f764dfb5228af7279a",
-    "eventName": "INSERT",
+    "eventName": "MODIFY",
     "eventVersion": "1.1",
     "eventSource": "aws:dynamodb",
     "awsRegion": "us-east-1",

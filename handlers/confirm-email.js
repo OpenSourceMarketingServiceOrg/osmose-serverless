@@ -7,101 +7,32 @@ const corsHeaders = {
 const osmose = require('osmose-email-engine');
 const uuidv4 = require('uuid/v4');
 const dynamo = require('../daos/update-item');
-const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB({
-    apiVersion: '2012-08-10'
-});
 
-module.exports.sendConfirm = (event, context, callback) => {
+function sendConfirmEmailToUser(record) {
 
-    console.log("hi!", event);
-    if (event.resource) {
-
-        let confirmId = event.queryStringParameters.confirmId;
-
-        console.log("confirmId: ", confirmId);
-
-        // let params = {
-        //   ExpressionAttributeValues: {
-        //     ":id": {
-        //       S: confirmId
-        //     }
-        //   },
-        //   KeyConditionExpression: "ConfirmUUID = :id",
-        //   ProjectionExpression: "Email",
-        //   TableName: "ClientList"
-        // }
-        let params = {
-            ExpressionAttributeValues: {
-                ":id": {
-                    S: confirmId
-                }
+    let first = record.dynamodb.NewImage.FirstName.S;
+    let last = record.dynamodb.NewImage.LastName.S;
+    let emailAddress = record.dynamodb.NewImage.Email.S;
+    let confirmUUID = record.dynamodb.NewImage.ConfirmUUID.S;
+    let confirmed = record.dynamodb.NewImage.Confirmed.BOOL;
+    let emailBinary = new Buffer(emailAddress.trim()).toString("base64");
+    if(!confirmed) {
+        let email = {
+            from: 'dezzNutz@osmose.tools',
+            to: {
+                BccAddresses: [],
+                CccAddresses: [],
+                ToAddresses: [emailAddress]
             },
-            FilterExpression: "ConfirmUUID = :id",
-            TableName: "ClientList"
+            subject: 'You\'ve Been Signed Up For OSMoSE Mail!',
+            content: '<html><body><h1>Welcome to OSMoSE Mail!</h1><h3>Hi ' + first + '!</h3><p>You\'ve been signed up for OSMoSE Mail!</p><p>Please click this link to <a href="https://zsazrlvshe.execute-api.us-east-1.amazonaws.com/dev1/confirm?' + confirmUUID + '">confirm</a>.</p></body></html>'
         };
-
-        console.log("params: ", params);
-
-        dynamodb.scan(params, (err, data) => {
-            if (err) console.log(err, err.stack); // an error occurred
-            else console.log(data); // successful response
-        })
-
-
-    } else {
-
-        event.Records.forEach((record) => {
-
-            console.log("record: ", record);
-
-            let first
-            let last;
-            let emailAddress;
-
-            if (record.dynamodb.NewImage) {
-                first = record.dynamodb.NewImage.FirstName.S;
-                last = record.dynamodb.NewImage.LastName.S;
-                emailAddress = record.dynamodb.NewImage.Email.S;
-            } else {
-                first = record.dynamodb.OldImage.FirstName.S;
-                last = record.dynamodb.OldImage.LastName.S;
-                emailAddress = record.dynamodb.OldImage.Email.S;
-            }
-
-            let key = record.dynamodb.Keys.EmailBinary.B;
-
-            let email = {
-                from: 'dezzNutz@osmose.tools',
-                to: {
-                    BccAddresses: [],
-                    CccAddresses: [],
-                    ToAddresses: [emailAddress]
-                },
-                subject: 'You\'ve Been Signed Up For OSMoSE Mail!',
-                content: '<html><body><h1>Welcome to OSMoSE Mail!</h1><h3>Hi ' + first + '!</h3><p>You\'ve been signed up for OSMoSE Mail!</p></body></html>'
-            };
-
-            let uuid = uuidv4();
-            console.log("key: ", key);
-            console.log("uuid: ", uuid);
-            // translateToPostParams(emailAddress, uuid).then((params) => {
-            //     console.log('params: ', params);
-            //     dynamo.updateItem(params);
-            // });
-            console.log('email: ', email);
-            osmose.osmoseSendEmail(email);
-        });
-    }
-}
-
-//TODO move to models dir
-function translateToPostParams(emailAddress, uuid) {
-    return new Promise((resolve, reject) => {
+        osmose.osmoseSendEmail(email);    
+        let emailBinary = new Buffer(emailAddress.trim()).toString("base64");
         let params = {
             "Key": {
                 "EmailBinary": {
-                    B: new Buffer(emailAddress.trim()).toString("base64")
+                    B: emailBinary
                 },
                 "Email": {
                     S: emailAddress.trim()
@@ -109,20 +40,45 @@ function translateToPostParams(emailAddress, uuid) {
             },
             "ReturnValues": "NONE",
             "ExpressionAttributeNames": {
-                "#CU": "ConfirmUUID",
-                "#C": "Confirmed"
+                "#CS": "ConfirmedEmailSent"
             },
             "ExpressionAttributeValues": {
-                ":cu": {
-                    "S": uuid
-                },
-                ":c": {
-                    "BOOL": false
+                ":cs": {
+                    "BOOL": true
                 }
             },
-            "UpdateExpression": "SET #CU = :cu, #C = :c",
+            "UpdateExpression": "SET #CS = :cs",
             "TableName": "ClientList"
         };
-        resolve(params);
-    });
+        dynamo.updateItem(params).then((res) => {
+            console.log('updateSuccess: ', res);
+        }).catch((err) => {
+            console.log("ERROR: ", err);
+        });
+    }
+}
+
+module.exports.sendConfirm = (event, context, callback) => {
+    console.log("hi!", event);
+    if (event.resource) {
+        console.log('other');
+    } else {
+        console.log('records length: ', event.Records.length);
+        event.Records.forEach((record) => {
+            console.log("record: ", record);
+            if(record.eventName === 'INSERT') {
+                if(!record.dynamodb.NewImage.Confirmed.BOOL && !record.dynamodb.NewImage.ConfirmedEmailSent.BOOL) {
+                    sendConfirmEmailToUser(record);
+                } else {
+                    console.log('email already sent or confirmed');
+                }
+            } else {
+                console.log('record not insert: ', record.eventName);
+                if(record.dynamodb.Keys) {
+                    console.log('record.dynamodb.Keys.Email: ', record.dynamodb.Keys.Email);
+                }
+                
+            }         
+        });
+    }
 }

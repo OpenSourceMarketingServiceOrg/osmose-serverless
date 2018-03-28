@@ -112,7 +112,7 @@ function getUUID() {
     console.log('in GetUUID');
     return new Promise((resolve, reject) => {
         let uuid = uuidv4();
-        var params = {
+        let params = {
             TableName: 'ClientList', /* required */
             IndexName: 'UUID',
             ExpressionAttributeValues: {

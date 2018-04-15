@@ -9,13 +9,14 @@ const AWS = require('aws-sdk');
 const dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
 const dynamoDoc = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
 const uuidv4 = require('uuid/v4');
+const config = require('../config/osmose');
 
 function deleteItemFromDynamoDB(params) {
     return new Promise((resolve, reject) => {
         dynamodb.deleteItem(params, (err, data) => {
             if (err) {
-                console.log("ERROR: ", err);
-                console.log("These params were rejected: ", params);
+                console.error("ERROR: ", err);
+                console.error("These params were rejected: ", params);
                 reject(err);
             } else {
                 resolve(data);
@@ -29,13 +30,13 @@ function getItemsFromDynamoDB() {
 
         //TODO move to models dir
         let params = {
-            TableName: "ClientList"
+            TableName: config.database.recipientTable
         };
 
         dynamodb.scan(params, (err, data) => {
             if (err) {
-                console.log("ERROR: ", err);
-                console.log("These params were rejected: ", params);
+                console.error("ERROR: ", err);
+                console.error("These params were rejected: ", params);
                 reject(err);
             } else {
                 resolve(data);
@@ -72,7 +73,7 @@ function translateToPostParams(event, uuid) {
                 }
             },
             "UpdateExpression": "SET #FN = :fn, #LN = :ln",
-            "TableName": "ClientList"
+            "TableName": config.database.recipientTable
         };
         if(uuid) {
             params.ExpressionAttributeNames['#CU'] = "ConfirmUUID";
@@ -100,7 +101,7 @@ function translateToDeleteParams(event) {
                     S: event.queryStringParameters.emailToDelete
                 }
             },
-            "TableName": "ClientList"
+            "TableName": config.database.recipientTable
         };
         resolve(params);
     });
@@ -110,7 +111,7 @@ function getUUID() {
     return new Promise((resolve, reject) => {
         let uuid = uuidv4();
         let params = {
-            TableName: 'ClientList', /* required */
+            TableName: config.database.recipientTable,
             IndexName: 'UUID',
             ExpressionAttributeValues: {
                 ':cu':  uuid
@@ -119,8 +120,8 @@ function getUUID() {
           };
         dynamoDoc.query(params, (err, data) => {
             if (err) {
-                console.log("ERROR: ", err);
-                console.log("These params were rejected: ", params);
+                console.error("ERROR: ", err);
+                console.error("These params were rejected: ", params);
                 reject(err);
             } else {
                 if(data.Count === 0) {

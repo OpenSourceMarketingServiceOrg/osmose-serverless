@@ -7,8 +7,8 @@ const corsHeaders = {
 const osmose = require('osmose-email-engine');
 const dynamo = require('../daos/update-item');
 const AWS = require('aws-sdk');
-
 const dynamoDoc = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+const config = require('../config/osmose');
 
 function sendConfirmEmailToUser(record) {
 
@@ -16,14 +16,14 @@ function sendConfirmEmailToUser(record) {
     let emailBinary = new Buffer(emailAddress).toString("base64");
     if(!record.dynamodb.NewImage.Confirmed.BOOL) {
         let email = {
-            from: 'dezzNutz@osmose.tools',
+            from: config.email.confirm.from,
             to: {
                 BccAddresses: [],
                 CccAddresses: [],
                 ToAddresses: [emailAddress]
             },
-            subject: 'You\'ve Been Signed Up For OSMoSE Mail!',
-            content: '<html><body><h1>Welcome to OSMoSE Mail!</h1><h3>Hi ' + record.dynamodb.NewImage.FirstName.S + '!</h3><p>You\'ve been signed up for OSMoSE Mail!</p><p>Please click this link to <a href="https://zsazrlvshe.execute-api.us-east-1.amazonaws.com/dev1/confirm?confirmUuid=' + record.dynamodb.NewImage.ConfirmUUID.S + '">confirm</a>.</p></body></html>'
+            subject: config.email.confirm.subject,
+            content: '<html><body><h1>Welcome to OSMoSE Mail!</h1><h3>Hi ' + record.dynamodb.NewImage.FirstName.S + '!</h3><p>You\'ve been signed up for OSMoSE Mail!</p><p>Please click this link to <a href="' + config.email.confirm.apiUrl + record.dynamodb.NewImage.ConfirmUUID.S + '">confirm</a>.</p></body></html>'
         };
         osmose.osmoseSendEmail(email);
         let params = {
@@ -45,12 +45,12 @@ function sendConfirmEmailToUser(record) {
                 }
             },
             "UpdateExpression": "SET #CS = :cs",
-            "TableName": "ClientList"
+            "TableName": config.database.recipientTable
         };
         dynamo.updateItem(params).then((res) => {
-            console.log('updateSuccess: ', res);
+            //console.log('updateSuccess: ', res);
         }).catch((err) => {
-            console.log("ERROR: ", err);
+            console.error("ERROR: ", err);
         });
     }
 }
@@ -68,8 +68,8 @@ function confirmUserWithUuid(uuid) {
         dynamoDoc.query(params, (err, data) => {
             let response;
             if (err) {
-                console.log("ERROR: ", err);
-                console.log("These params were rejected: ", params);
+                console.error("ERROR: ", err);
+                console.error("These params were rejected: ", params);
                 response = {
                     statusCode: 500,
                     headers: corsHeaders,
@@ -98,7 +98,7 @@ function confirmUserWithUuid(uuid) {
                                 }
                             },
                             "UpdateExpression": "SET #CD = :cd",
-                            "TableName": "ClientList"
+                            "TableName": config.database.recipientTable
                         };
                         dynamo.updateItem(params).then((res) => {
                             response = {
@@ -111,7 +111,7 @@ function confirmUserWithUuid(uuid) {
                             };
                             resolve(response);
                         }).catch((err) => {
-                            console.log("ERROR: ", err);
+                            console.error("ERROR: ", err);
                         });                                 
                     });
                 } else {
@@ -160,11 +160,6 @@ module.exports.sendConfirm = (event, context, callback) => {
                 if(!record.dynamodb.NewImage.Confirmed.BOOL && !record.dynamodb.NewImage.ConfirmedEmailSent.BOOL) {
                     sendConfirmEmailToUser(record);
                 }
-            } else {
-                console.log('record not insert: ', record.eventName);
-                if(record.dynamodb.Keys) {
-                    console.log('record.dynamodb.Keys.Email: ', record.dynamodb.Keys.Email);
-                }              
             }         
         });
     }

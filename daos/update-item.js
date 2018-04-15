@@ -7,8 +7,8 @@ exports.updateItem = (params)=> {
   return new Promise((resolve, reject) => {
     dynamodb.updateItem(params, (err, data) => {
       if (err) {
-        console.log(err);
-        console.log("These params were rejected: ", params);
+        console.error(err);
+        console.error("These params were rejected: ", params);
         reject(err);
       } else {
         resolve(data);

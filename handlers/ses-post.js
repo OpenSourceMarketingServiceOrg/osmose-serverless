@@ -7,7 +7,6 @@ const osmose = require('osmose-email-engine');
 
 module.exports.postEmail = (event, context, callback) => {
 
-    console.log(event.body);
     event.body = JSON.parse(event.body);
     osmose.osmoseSendEmail(event.body);
 

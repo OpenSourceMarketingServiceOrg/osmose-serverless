@@ -1,10 +1,9 @@
 'use strict';
 
 const dynamo = require('../daos/update-item');
+const config = require('../config/osmose');
 
 module.exports.saveEmailStatus = (event, context, callback) => {
-
-  console.log("event: ", event.Records[0].Sns.Message);
 
   let addressList = [];
   //TODO add for each for Records
@@ -56,15 +55,13 @@ module.exports.saveEmailStatus = (event, context, callback) => {
         }
       },
       "UpdateExpression": "SET #AL = :al, #S = :s",
-      "TableName": "SentEmailStatus"
+      "TableName": config.database.statusTable
     };
 
-    console.log('params: ', params);
-
     dynamo.updateItem(params).then((res) => {
-      console.log("resForPost", res);
+      //console.log("resForPost", res);
     });
   } else {
-    console.log("Destination was null ");
+    console.error("Destination was null ");
   }
 };

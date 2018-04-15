@@ -1,44 +1,7 @@
 {
     "name": "osmose-serverless",
     "version": "1.0.0",
-    "description": "OSMoSE serverless backend written for AWS Lambda",
-    "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/OpenSourceMarketingServiceOrg/osmos-serverless.git"
-    },
-    "contributors": [
-        {
-            "name": "Dan Brown",
-            "email": "danjenator@gmail.com",
-            "url": "https://github.com/Danjenator"
-        },
-        {
-            "name": "Quinn Lawrence",
-            "email": "qtlawrence@outlook.com",
-            "url": "https://github.com/qtlawrence"
-        },
-        {
-            "name": "Michael Hopkins",
-            "email": "mahgdd@gmail.com",
-            "url": "https://github.com/hopkinsma"
-        }
-    ],
-    "keywords": [
-        "lambda",
-        "serverless",
-        "OSMoSE",
-        "SES",
-        "aws",
-        "SNS",
-        "DynamoDB",
-        "email",
-        "api",
-        "api-gateway"
-    ],
-    "bugs": {
-        "url": "https://github.com/OpenSourceMarketingServiceOrg/osmose-serverless/issues"
-    },
+    "description": "OSMoSE serverless fucntions written for AWS Lambda",
     "license": "MIT",
     "scripts": {
         "start": "npm run f:ses && npm run f:api && npm run f:con",
@@ -54,12 +17,39 @@
         "f:con:c": "serverless invoke local -f confirmEmail -p events/get_confirm_event.json"
     },
     "devDependencies": {
-        "serverless": "1.17.0",
-        "serverless-offline": "3.15.1"
+        "serverless": "1.26.1",
+        "serverless-offline": "3.20.2"
     },
     "dependencies": {
-        "aws-sdk": "2.122.0",
+        "aws-sdk": "2.224.1",
         "osmose-email-engine": "1.0.0",
-        "uuid": "3.1.0"
-    }
+        "uuid": "3.2.1"
+    },
+    "author": "OpenSourceMarketingService <OpenSourceMarketingService@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/OpenSourceMarketingServiceOrg/osmos-serverless.git"
+    },
+    "bugs": {
+        "url": "https://github.com/OpenSourceMarketingServiceOrg/osmose-serverless/issues"
+    },
+    "homepage": "http://osmose.tools",
+    "contributors": [
+        "Dan Brown <danjenator@gmail.com> (https://github.com/Danjenator)",
+        "Michael Hopkins <mahgdd@gmail.com> (https://github.com/hopkinsma)",
+        "Quinn Lawrence <qtlawrence@outlook.com> (https://github.com/qtlawrence)"
+    ],
+    "keywords": [
+        "lambda",
+        "serverless",
+        "OSMoSE",
+        "SES",
+        "AWS",
+        "SNS",
+        "DynamoDB",
+        "DynamoDBStreams",
+        "email",
+        "api",
+        "api-gateway"
+    ]
 }

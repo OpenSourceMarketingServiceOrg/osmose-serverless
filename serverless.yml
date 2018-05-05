@@ -26,7 +26,7 @@ provider:
 
 
 # you can overwrite defaults here
-  stage: dev0
+  stage: dev1
   region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
@@ -63,9 +63,9 @@ functions:
     handler: handlers/ses-sns.saveEmailStatus
     events:
       - sns: arn:aws:sns:us-east-1:420906024005:osmose_mail
-  emailList: # Function name
-    handler: handlers/api-list.emailList # Reference to file handler.js & exported function 'users'
-    events: # All events associated with this function
+  emailList:
+    handler: handlers/api-list.emailList
+    events:
       - http:
           path: list
           method: post
@@ -85,6 +85,7 @@ functions:
   confirmEmail:
     handler: handlers/confirm-email.sendConfirm
     events:
+      - stream: arn:aws:dynamodb:us-east-1:420906024005:table/ClientList/stream/2018-03-27T17:57:25.787
       - http:
           path: confirm
           method: get

@@ -6,16 +6,17 @@ const corsHeaders = {
 }
 const dynamo = require('../daos/update-item');
 const AWS = require('aws-sdk');
-const dynamodb = new AWS.DynamoDB({
-    apiVersion: '2012-08-10'
-});
+const dynamodb = new AWS.DynamoDB({apiVersion: '2012-08-10'});
+const dynamoDoc = new AWS.DynamoDB.DocumentClient({apiVersion: '2012-08-10'});
+const uuidv4 = require('uuid/v4');
+const config = require('../config/osmose');
 
 function deleteItemFromDynamoDB(params) {
     return new Promise((resolve, reject) => {
         dynamodb.deleteItem(params, (err, data) => {
             if (err) {
-                console.log("ERROR: ", err);
-                console.log("These params were rejected: ", params);
+                console.error("ERROR: ", err);
+                console.error("These params were rejected: ", params);
                 reject(err);
             } else {
                 resolve(data);
@@ -29,27 +30,26 @@ function getItemsFromDynamoDB() {
 
         //TODO move to models dir
         let params = {
-            TableName: "ClientList"
+            TableName: config.database.recipientTable
         };
 
         dynamodb.scan(params, (err, data) => {
             if (err) {
-                console.log("ERROR: ", err);
-                console.log("These params were rejected: ", params);
+                console.error("ERROR: ", err);
+                console.error("These params were rejected: ", params);
                 reject(err);
             } else {
                 resolve(data);
             }
-        })
+        });
     });
 }
 
 //TODO move to models dir
-function translateToPostParams(event) {
+function translateToPostParams(event, uuid) {
     return new Promise((resolve, reject) => {
         let body = JSON.parse(event.body);
-        console.log("body: ", body);
-        let emailBinary = new Buffer(body.email).toString("base64");
+        let emailBinary = new Buffer(body.email.trim()).toString("base64");
         let params = {
             "Key": {
                 "EmailBinary": {
@@ -73,15 +73,23 @@ function translateToPostParams(event) {
                 }
             },
             "UpdateExpression": "SET #FN = :fn, #LN = :ln",
-            "TableName": "ClientList"
+            "TableName": config.database.recipientTable
         };
+        if(uuid) {
+            params.ExpressionAttributeNames['#CU'] = "ConfirmUUID";
+            params.ExpressionAttributeNames['#CD'] = "Confirmed";
+            params.ExpressionAttributeNames['#CS'] = "ConfirmedEmailSent";
+            params.ExpressionAttributeValues[':cu'] = { "S": uuid };
+            params.ExpressionAttributeValues[':cd'] = { "BOOL": false };
+            params.ExpressionAttributeValues[':cs'] = { "BOOL": false };
+            params.UpdateExpression = params.UpdateExpression + ', #CU = :cu, #CD = :cd, #CS = :cs';
+        }
         resolve(params);
     });
 }
 
 //TODO move to models dir
 function translateToDeleteParams(event) {
-    console.log("delete event: ", event);
     return new Promise((resolve, reject) => {
         let emailBinary = new Buffer(event.queryStringParameters.emailToDelete).toString("base64")
         let params = {
@@ -93,15 +101,44 @@ function translateToDeleteParams(event) {
                     S: event.queryStringParameters.emailToDelete
                 }
             },
-            "TableName": "ClientList"
+            "TableName": config.database.recipientTable
         };
         resolve(params);
     });
 }
 
+function getUUID() {
+    return new Promise((resolve, reject) => {
+        let uuid = uuidv4();
+        let params = {
+            TableName: config.database.recipientTable,
+            IndexName: 'UUID',
+            ExpressionAttributeValues: {
+                ':cu':  uuid
+            },
+            KeyConditionExpression: 'ConfirmUUID = :cu'
+          };
+        dynamoDoc.query(params, (err, data) => {
+            if (err) {
+                console.error("ERROR: ", err);
+                console.error("These params were rejected: ", params);
+                reject(err);
+            } else {
+                if(data.Count === 0) {
+                    resolve(uuid);
+                } else {
+                    console.log('uuid has been used');
+                    getUUID().then((results) => {
+                        resolve(results);
+                    });
+                }
+            }
+        });
+    });
+}
+
 module.exports.emailList = (event, context, callback) => {
 
-    console.log("event.httpMethod", event.httpMethod);
     let response;
     let items;
     let emails = [];
@@ -109,7 +146,6 @@ module.exports.emailList = (event, context, callback) => {
     if (event.httpMethod === "GET") {
         getItemsFromDynamoDB().then((res) => {
             items = res.Items;
-            console.log("items: ", items);
             let res0 = {
                 "title": "Email List",
                 "emailList": items,
@@ -122,7 +158,7 @@ module.exports.emailList = (event, context, callback) => {
             };
             callback(null, response);
         }).catch((err) => {
-            console.log("ERROR: ", err);
+            console.error("ERROR: ", err);
             response = {
                 statusCode: err.statusCode,
                 headers: corsHeaders,
@@ -131,28 +167,31 @@ module.exports.emailList = (event, context, callback) => {
             callback(null, response);
         });
     } else if (event.httpMethod === "POST") {
-        translateToPostParams(event).then((params) => {
-            dynamo.updateItem(params).then((res) => {
-                response = {
-                    statusCode: 200,
-                    headers: corsHeaders,
-                    body: JSON.stringify({
-                        message: "POST IT!",
-                        input: res
-                    })
-                };
-                callback(null, response);
-            }).catch((err) => {
-                console.log("ERROR: ", err);
-                response = {
-                    statusCode: err.statusCode,
-                    headers: corsHeaders,
-                    body: JSON.stringify({
-                        message: "ERROR IT!",
-                        input: err
-                    })
-                };
-                callback(null, response);
+
+        getUUID().then((uuid) => {
+            translateToPostParams(event, uuid).then((params) => {
+                dynamo.updateItem(params).then((res) => {
+                    response = {
+                        statusCode: 200,
+                        headers: corsHeaders,
+                        body: JSON.stringify({
+                            message: "POST IT!",
+                            input: res
+                        })
+                    };
+                    callback(null, response);
+                }).catch((err) => {
+                    console.error("ERROR: ", err);
+                    response = {
+                        statusCode: err.statusCode,
+                        headers: corsHeaders,
+                        body: JSON.stringify({
+                            message: "ERROR IT!",
+                            input: err
+                        })
+                    };
+                    callback(null, response);
+                });
             });
         });
     } else if (event.httpMethod === "PUT") {
@@ -168,7 +207,7 @@ module.exports.emailList = (event, context, callback) => {
                 };
                 callback(null, response);
             }).catch((err) => {
-                console.log("ERROR: ", err);
+                console.error("ERROR: ", err);
                 response = {
                     statusCode: err.statusCode,
                     headers: corsHeaders,
@@ -183,7 +222,6 @@ module.exports.emailList = (event, context, callback) => {
     } else if (event.httpMethod === "DELETE") {
         translateToDeleteParams(event).then((params) => {
             deleteItemFromDynamoDB(params).then((res) => {
-                console.log("resForDelete: ", res);
                 response = {
                     statusCode: 200,
                     headers: corsHeaders,
@@ -193,7 +231,7 @@ module.exports.emailList = (event, context, callback) => {
                 };
                 callback(null, response);
             }).catch((err) => {
-                console.log("ERROR: ", err);
+                console.error("ERROR: ", err);
                 response = {
                     statusCode: err.statusCode,
                     headers: corsHeaders,

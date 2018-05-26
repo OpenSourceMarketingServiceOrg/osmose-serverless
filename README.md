@@ -15,7 +15,7 @@ The other projects:
 1. Creating 2 tables in [DynamoDB](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html)
   1. ```
       Table name: ClientList
-      Primary partition key: SentEmailStatus (Binary)
+      Primary partition key: Email (Binary)
       Primary sort key: Email (String) 
       Read Capacity Unit: 5
       Write Capacity Unit: 5

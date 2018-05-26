@@ -1,6 +1,6 @@
 {
     "name": "osmose-serverless",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "OSMoSE serverless fucntions written for AWS Lambda",
     "license": "MIT",
     "scripts": {
